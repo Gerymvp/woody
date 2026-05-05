@@ -21,30 +21,38 @@ import Header from '../components/Header.astro';
           Regístrate para explorar las mejores mueblerías de Panamá
         </p>
 
-        <form class="flex flex-col gap-4">
+        <form id="registerForm" class="flex flex-col gap-4">
 
           <input
+            id="nombre"
             type="text"
             placeholder="Nombre"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <input
+            id="apellido"
             type="text"
             placeholder="Apellido"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <input
+            id="email"
             type="email"
             placeholder="Correo electrónico"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <input
+            id="password"
             type="password"
             placeholder="Contraseña"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <button
@@ -54,6 +62,8 @@ import Header from '../components/Header.astro';
             Crear cuenta
           </button>
 
+          <p id="message" class="text-center text-sm"></p>
+
         </form>
 
       </div>
@@ -62,3 +72,44 @@ import Header from '../components/Header.astro';
 
   </main>
 </Layout>
+
+<script type="module">
+  import { supabase } from "../lib/supabase.js";
+
+  const form = document.getElementById("registerForm");
+  const message = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Crear usuario
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      message.classList.add("text-red-500");
+      return;
+    }
+
+    // Guardar datos adicionales
+    await supabase
+      .from("perfiles")
+      .update({
+        nombre,
+        apellido,
+      })
+      .eq("id", data.user.id);
+
+    message.textContent = "Cuenta creada correctamente";
+    message.classList.remove("text-red-500");
+    message.classList.add("text-green-600");
+  });
+</script>
