@@ -59,17 +59,12 @@
     Cerrar sesión
   </button>
 </div>
-<div class="relative">
+</div>
 </header>
 
-<script type="module">
-  import { supabase } from "../lib/supabase";
-
+<script>
   const btn = document.getElementById("profileBtn");
   const menu = document.getElementById("dropdownMenu");
-
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   btn.addEventListener("click", () => {
     menu.classList.toggle("hidden");
@@ -79,22 +74,5 @@
     if (!btn.contains(e.target) && !menu.contains(e.target)) {
       menu.classList.add("hidden");
     }
-  });
-
-  // Verificar sesión
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) {
-    logoutBtn.classList.remove("hidden");
-  } else {
-    loginBtn.classList.remove("hidden");
-  }
-
-  // Logout
-  logoutBtn.addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    location.reload();
   });
 </script>
