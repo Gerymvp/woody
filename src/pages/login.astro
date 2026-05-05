@@ -1,46 +1,52 @@
 ---
 // src/pages/login.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
 ---
 
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Iniciar sesión</title>
-</head>
+<Layout title="Iniciar sesión - Swoody">
+  <Header />
 
-<body class="bg-gray-200 min-h-screen flex items-center justify-center">
+  <main class="max-w-7xl mx-auto p-8">
 
-  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
+    <section class="flex justify-center items-center min-h-[70vh]">
 
-    <h1 class="text-2xl font-bold text-center mb-6">
-      Iniciar sesión
-    </h1>
+      <div class="bg-gray-200 rounded-2xl shadow-md p-10 w-full max-w-md">
 
-    <form class="flex flex-col gap-4">
+        <h1 class="text-4xl font-black text-center mb-3">
+          Bienvenido
+        </h1>
 
-      <input
-        type="email"
-        placeholder="Correo electrónico"
-        class="border rounded-lg px-4 py-2 focus:outline-none"
-      />
+        <p class="text-center text-gray-600 mb-8">
+          Inicia sesión para continuar en Swoody
+        </p>
 
-      <input
-        type="password"
-        placeholder="Contraseña"
-        class="border rounded-lg px-4 py-2 focus:outline-none"
-      />
+        <form class="flex flex-col gap-4">
 
-      <button
-        type="submit"
-        class="bg-black text-white rounded-lg py-2 hover:bg-gray-800"
-      >
-        Entrar
-      </button>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
 
-    </form>
+          <input
+            type="password"
+            placeholder="Contraseña"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
 
-  </div>
+          <button
+            type="submit"
+            class="bg-yellow-500 text-black py-3 rounded-full font-bold hover:bg-yellow-400 transition-all"
+          >
+            Iniciar sesión
+          </button>
 
-</body>
-</html>
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+</Layout>
