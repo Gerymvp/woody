@@ -1,1 +1,64 @@
+---
+// src/pages/crearCuenta.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
 
+<Layout title="Crear cuenta - Swoody">
+  <Header />
+
+  <main class="max-w-7xl mx-auto p-8">
+
+    <section class="flex justify-center items-center min-h-[70vh]">
+
+      <div class="bg-gray-200 rounded-2xl shadow-md p-10 w-full max-w-md">
+
+        <h1 class="text-4xl font-black text-center mb-3">
+          Crear cuenta
+        </h1>
+
+        <p class="text-center text-gray-600 mb-8">
+          Regístrate para explorar las mejores mueblerías de Panamá
+        </p>
+
+        <form class="flex flex-col gap-4">
+
+          <input
+            type="text"
+            placeholder="Nombre"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
+
+          <input
+            type="text"
+            placeholder="Apellido"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
+
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+          />
+
+          <button
+            type="submit"
+            class="bg-yellow-500 text-black py-3 rounded-full font-bold hover:bg-yellow-400 transition-all"
+          >
+            Crear cuenta
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+</Layout>
