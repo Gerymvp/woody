@@ -1,0 +1,35 @@
+---
+// src/components/catalogo/ProductCard.astro
+interface Props {
+  titulo: string;
+  precio: number;
+  imagen: string;
+  categoria: string;
+}
+
+const { titulo, precio, imagen, categoria } = Astro.props;
+---
+
+<div class="relative bg-gray-400 rounded-3xl aspect-4/3 shadow-lg overflow-hidden group">
+  <!-- Imagen del Producto -->
+  <img 
+    src={imagen} 
+    alt={titulo} 
+    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  />
+
+  <!-- Overlay de Información (Basado en Mockup) -->
+  <div class="absolute bottom-4 left-4 right-4 flex gap-2">
+    <div class="bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center">
+      ${precio.toFixed(2)}
+    </div>
+    <div class="flex-1 bg-white/60 backdrop-blur px-6 py-2 rounded-full text-center font-bold text-gray-800 shadow-sm truncate">
+      {titulo}
+    </div>
+  </div>
+  
+  <!-- Badge de Categoría opcional -->
+  <span class="absolute top-4 right-4 bg-black/50 text-white text-[10px] px-2 py-1 rounded-full uppercase">
+    {categoria}
+  </span>
+</div>
