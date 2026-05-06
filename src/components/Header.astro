@@ -1,11 +1,11 @@
 ---
 // src/components/Header.astro
 ---
-<header class="bg-gray-400 p-3 flex items-center justify-between shadow-md">
+<header class="bg-gray-400 p-3 flex items-center justify-between shadow-md relative">
   <!-- Logo -->
-  <div class="bg-white px-4 py-1 rounded shadow-sm">
+  <a href="/" class="bg-white px-4 py-1 rounded shadow-sm hover:opacity-90 transition-opacity">
     <span class="text-black font-black text-2xl">SWOO</span><span class="text-yellow-500 font-black text-2xl">DY</span>
-  </div>
+  </a>
 
   <!-- Buscador -->
   <div class="flex-1 max-w-md mx-4">
@@ -21,58 +21,49 @@
     </div>
   </div>
 
-  <!-- Perfil -->
-<div class="relative">
-  <div 
-    id="profileBtn"
-    class="flex items-center bg-gray-500 rounded-full px-4 py-1 gap-2 cursor-pointer"
-  >
-    <div class="bg-black rounded-full p-1 text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  <div class="flex items-center gap-4">
+    <!-- Botón Carrito -->
+    <a href="https://woody-brown.vercel.app/carrito" class="bg-gray-500 p-2 rounded-full text-white hover:bg-yellow-500 hover:text-black transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+    </a>
+
+    <!-- Perfil con ID para JS -->
+    <div class="relative">
+      <div id="profileBtn" class="flex items-center bg-gray-500 rounded-full px-4 py-1 gap-2 cursor-pointer hover:bg-gray-600 transition-colors">
+        <div class="bg-black rounded-full p-1 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <span class="font-semibold text-white">Perfil</span>
+        <svg class="text-white" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+
+      <!-- Menú Desplegable con ID para JS -->
+      <div id="dropdownMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 text-black border border-gray-200">
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">Mi Cuenta</a>
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">Configuración</a>
+        <hr class="my-1 border-gray-200">
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600 font-medium">Cerrar Sesión</a>
+      </div>
     </div>
-    <span class="font-semibold">Perfil</span>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
   </div>
-
-<!-- Dropdown -->
-<div 
-  id="dropdownMenu"
-  class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-md text-black"
->
-  <button 
-    id="loginBtn"
-    class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-  >
-    Iniciar sesión
-  </button>
-
-  <button 
-    class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-  >
-    Configuración
-  </button>
-
-  <button 
-    id="logoutBtn"
-    class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-  >
-    Cerrar sesión
-  </button>
-</div>
-</div>
 </header>
 
 <script>
+  // El uso de "is:inline" o colocarlo al final asegura que el DOM esté listo
   const btn = document.getElementById("profileBtn");
   const menu = document.getElementById("dropdownMenu");
 
-  btn.addEventListener("click", () => {
-    menu.classList.toggle("hidden");
-  });
+  if (btn && menu) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // Evita que el click se propague al document inmediatamente
+      menu.classList.toggle("hidden");
+    });
 
-  document.addEventListener("click", (e) => {
-    if (!btn.contains(e.target) && !menu.contains(e.target)) {
-      menu.classList.add("hidden");
-    }
-  });
+    document.addEventListener("click", (e) => {
+      // Si el click no es en el botón ni en el menú, se cierra
+      if (!btn.contains(e.target as Node) && !menu.contains(e.target as Node)) {
+        menu.classList.add("hidden");
+      }
+    });
+  }
 </script>

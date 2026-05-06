@@ -2,54 +2,30 @@
 // src/pages/catalogo.astro
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
+import ProductCard from '../components/catalogo/ProductCard.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch de productos desde la tabla que creamos
+const { data: productos, error } = await supabase
+  .from('productos')
+  .select('*');
 
 const categories = ["Sala", "Comedor", "Dormitorio", "Empotrados", "Oficina"];
-const products = Array(9).fill({ title: "Título", price: "Price.00" });
 ---
 
 <Layout title="Catálogo - Swoody">
   <Header />
-  
   <div class="flex min-h-screen bg-white">
-    <!-- Sidebar Izquierdo -->
-    <aside class="w-64 p-6 border-r border-gray-200">
-      <h2 class="text-center font-bold text-xl mb-6">Hogar</h2>
-      
-      <nav class="space-y-4 mb-10">
-        {categories.map((cat) => (
-          <button class="w-full text-left py-3 px-4 rounded shadow-md border border-gray-100 hover:bg-gray-50 transition-colors font-medium">
-            {cat}
-          </button>
-        ))}
-      </nav>
-
-      <div class="space-y-4 border-t pt-4">
-        <div class="flex justify-between items-center text-sm font-bold">
-          <span>Sale & Offers</span>
-          <span>▼</span>
-        </div>
-        <div class="flex justify-between items-center text-sm font-bold">
-          <span>Gender (1)</span>
-          <span>▼</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Grid de Productos -->
-    <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Sidebar e interfaz... -->
+    <main class="flex-1 p-8">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((item) => (
-          <div class="relative bg-gray-400 rounded-3xl aspect-4/3 shadow-lg overflow-hidden group">
-            <!-- Overlay Inferior -->
-            <div class="absolute bottom-4 left-4 right-4 flex gap-2">
-              <div class="bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-sm font-bold shadow-sm">
-                {item.price}
-              </div>
-              <div class="flex-1 bg-white/60 backdrop-blur px-6 py-2 rounded-full text-center font-bold text-gray-800 shadow-sm">
-                {item.title}
-              </div>
-            </div>
-          </div>
+        {productos?.map((prod) => (
+          <ProductCard 
+            titulo={prod.titulo}
+            precio={prod.precio}
+            imagen={prod.imagen_url}
+            categoria={prod.categoria}
+          />
         ))}
       </div>
     </main>
