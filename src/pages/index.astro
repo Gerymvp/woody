@@ -1,0 +1,28 @@
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Swoody - Muebles a domicilio">
+	<Header />
+	<main class="max-w-7xl mx-auto p-8">
+		<section class="text-center my-12">
+			<h1 class="text-4xl font-black mb-4">Muebles a un click de distancia</h1>
+			<p class="text-gray-600 mb-8">Explora las mejores mueblerías de Panamá.</p>
+			<a href="/catalogo" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-bold hover:bg-yellow-400 transition-all">
+				Ver Catálogo Completo
+			</a>
+		</section>
+
+		<!-- Mueblerías Asociadas -->
+		<h2 class="text-2xl font-bold mb-6">Mueblerías Asociadas</h2>
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+			{Array(4).fill(0).map((_, i) => (
+				<div class="bg-gray-200 h-32 rounded-xl flex items-center justify-center font-bold text-gray-400">
+					Logo Mueblería {i+1}
+				</div>
+			))}
+		</div>
+	</main>
+</Layout>
