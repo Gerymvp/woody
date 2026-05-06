@@ -21,18 +21,22 @@ import Header from '../components/Header.astro';
           Inicia sesión para continuar en Swoody
         </p>
 
-        <form class="flex flex-col gap-4">
+        <form id="loginForm" class="flex flex-col gap-4">
 
           <input
+            id="email"
             type="email"
             placeholder="Correo electrónico"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <input
+            id="password"
             type="password"
             placeholder="Contraseña"
             class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
           />
 
           <button
@@ -42,6 +46,8 @@ import Header from '../components/Header.astro';
             Iniciar sesión
           </button>
 
+          <p id="message" class="text-center text-sm"></p>
+
         </form>
 
       </div>
@@ -50,3 +56,30 @@ import Header from '../components/Header.astro';
 
   </main>
 </Layout>
+
+<script type="module">
+  import { supabase } from "/supabase.js";
+
+  const form = document.getElementById("loginForm");
+  const message = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      message.classList.add("text-red-500");
+      return;
+    }
+
+    window.location.href = "/";
+  });
+</script>
