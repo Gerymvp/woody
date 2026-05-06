@@ -1,0 +1,117 @@
+---
+// src/pages/crearCuenta.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Crear cuenta - Swoody">
+  <Header />
+
+  <main class="max-w-7xl mx-auto p-8">
+
+    <section class="flex justify-center items-center min-h-[70vh]">
+
+      <div class="bg-gray-200 rounded-2xl shadow-md p-10 w-full max-w-md">
+
+        <h1 class="text-4xl font-black text-center mb-3">
+          Crear cuenta
+        </h1>
+
+        <p class="text-center text-gray-600 mb-8">
+          Regístrate para explorar las mejores mueblerías de Panamá
+        </p>
+
+        <form id="registerForm" class="flex flex-col gap-4">
+
+          <input
+            id="nombre"
+            type="text"
+            placeholder="Nombre"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
+          />
+
+          <input
+            id="apellido"
+            type="text"
+            placeholder="Apellido"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
+          />
+
+          <input
+            id="email"
+            type="email"
+            placeholder="Correo electrónico"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
+          />
+
+          <input
+            id="password"
+            type="password"
+            placeholder="Contraseña"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
+          />
+
+          <button
+            type="submit"
+            class="bg-yellow-500 text-black py-3 rounded-full font-bold hover:bg-yellow-400 transition-all"
+          >
+            Crear cuenta
+          </button>
+
+          <p id="message" class="text-center text-sm"></p>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+</Layout>
+
+
+<script type="module">
+console.log("script funcionando");
+  import { supabase } from "/src/lib/supabase.js";
+
+  const form = document.getElementById("registerForm");
+  const message = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Crear usuario
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      message.classList.add("text-red-500");
+      return;
+    }
+
+    // Guardar datos adicionales
+    await supabase
+      .from("perfiles")
+      .update({
+        nombre,
+        apellido,
+      })
+      .eq("id", data.user.id);
+
+    message.textContent = "Cuenta creada correctamente";
+    message.classList.remove("text-red-500");
+    message.classList.add("text-green-600");
+  });
+</script>
