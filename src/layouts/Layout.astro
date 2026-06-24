@@ -8,6 +8,16 @@ import '../styles/global.css'; // <--- ESTA LÍNEA ES CLAVE
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RWFTYF5J48"></script>
+        <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RWFTYF5J48', { 'debug_mode': true });
+        </script>
+
         <meta name="generator" content={Astro.generator} />
         <title>Swoody - Marketplace de Muebles</title>
     </head>
