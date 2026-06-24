@@ -1,0 +1,32 @@
+---
+// src/components/Hero.astro
+import heroBg from '../assets/hero_1.png';
+---
+
+<section class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
+  <!-- Imagen de fondo optimizada -->
+  <img 
+    src={heroBg.src} 
+    alt="Diseño de interiores Swoody" 
+    class="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+  />
+  
+  <!-- Capa oscura (Overlay) para mejorar el contraste del texto -->
+  <div class="absolute inset-0 bg-black/40"></div>
+
+  <!-- Contenido del Hero (Traído desde tu index.astro actual) -->
+  <div class="relative z-10 text-center max-w-3xl px-4 text-white">
+    <h1 class="text-4xl md:text-6xl font-black mb-4 drop-shadow-md">
+      Muebles a un click de distancia
+    </h1>
+    <p class="text-gray-200 text-lg md:text-xl mb-8 drop-shadow-sm">
+      Explora las mejores mueblerías de Panamá.
+    </p>
+    <a 
+      href="/catalogo" 
+      class="bg-yellow-500 text-black px-8 py-3 rounded-full font-bold hover:bg-yellow-400 transition-all shadow-lg hover:scale-105 inline-block"
+    >
+      Ver Catálogo Completo
+    </a>
+  </div>
+</section>
