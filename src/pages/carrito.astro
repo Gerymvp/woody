@@ -1,278 +1,337 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
-
-const cartItems = [
-  {
-    title: "Sofá Moderno",
-    price: 120,
-    quantity: 2
-  },
-  {
-    title: "Mesa de Centro",
-    price: 80,
-    quantity: 1
-  }
-];
-
-const subtotal = cartItems.reduce(
-  (acc, item) => acc + item.price * item.quantity,
-  0
-);
-
-const tax = subtotal * 0.07;
-const total = subtotal + tax;
 ---
 
 <Layout title="Carrito - Swoody">
   <Header />
 
-  <!-- Botón flotante carrito -->
-  <a 
-    href="/carrito"
-    class="fixed bottom-8 right-8 bg-yellow-500 hover:bg-yellow-400 shadow-2xl hover:scale-110 transition-all duration-300 px-6 py-4 rounded-full font-bold z-50"
-  >
-    🛒 {cartItems.length} productos
-  </a>
+  <main class="max-w-7xl mx-auto p-6 md:p-8 bg-gray-50 min-h-screen">
+    <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-5xl font-black">Mi Carrito</h1>
 
-  <main class="max-w-7xl mx-auto p-8">
-    
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div class="flex items-center gap-3 mt-4 text-sm font-semibold">
 
-      <h1 class="text-4xl font-black">
-        Mi Carrito
-      </h1>
+          <span class="bg-yellow-500 text-black px-4 py-2 rounded-full">
+            🛒 Carrito
+          </span>
 
-      <a
-        href="/catalogo"
-        class="bg-gray-100 hover:bg-yellow-500 hover:scale-105 transition-all duration-300 px-6 py-3 rounded-2xl font-bold text-center"
-      >
-        Seguir comprando
-      </a>
+          <div class="w-12 h-1 bg-yellow-500 rounded"></div>
 
+          <span class="text-gray-400">
+            Pago
+          </span>
+
+          <div class="w-12 h-1 bg-gray-300 rounded"></div>
+
+          <span class="text-gray-400">
+            Confirmación
+          </span>
+
+        </div>
+
+        <p
+          id="cart-description"
+          class="mt-4 inline-flex items-center px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-semibold text-gray-700 shadow-sm"
+          aria-live="polite"
+        ></p>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <button id="clear-cart" type="button" class="hidden px-5 py-3 rounded-2xl font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition-all">
+          Vaciar carrito
+        </button>
+        <a href="/catalogo" class="bg-gray-100 hover:bg-yellow-500 transition-colors px-6 py-3 rounded-2xl font-bold text-center">
+          Seguir comprando
+        </a>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div id="empty-cart" class="hidden bg-white rounded-3xl shadow-lg p-10 md:p-16 text-center">
+      <div class="text-7xl mb-6" aria-hidden="true">🛒</div>
+      <h2 class="text-3xl font-black mb-4">Tu carrito está vacío</h2>
+      <p class="text-gray-500 mb-8">Explora nuestro catálogo y encuentra muebles increíbles para tu hogar.</p>
+      <a href="/catalogo" class="inline-block bg-yellow-500 hover:bg-yellow-400 transition-colors px-8 py-4 rounded-2xl font-bold">
+        Explorar catálogo
+      </a>
+    </div>
 
-      <!-- Productos -->
-      <section class="lg:col-span-2 space-y-6">
+    <div id="cart-content" class="hidden items-start grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section
+        id="cart-items"
+        class="lg:col-span-2 space-y-5 self-start"
+        aria-label="Productos del carrito"
+      ></section>
 
-        {cartItems.length === 0 ? (
-
-          <div class="bg-white rounded-3xl shadow-lg p-16 text-center">
-
-            <div class="text-7xl mb-6">
-              🛒
-            </div>
-
-            <h2 class="text-3xl font-black mb-4">
-              Tu carrito está vacío
-            </h2>
-
-            <p class="text-gray-500 mb-8">
-              Explora nuestro catálogo y encuentra muebles increíbles para tu hogar.
-            </p>
-
-            <a
-              href="/catalogo"
-              class="inline-block bg-yellow-500 hover:bg-yellow-400 hover:scale-105 transition-all duration-300 px-8 py-4 rounded-2xl font-bold"
-            >
-              Explorar catálogo
-            </a>
-
-          </div>
-
-        ) : (
-
-          <div class="space-y-6">
-
-            {cartItems.map((item) => (
-              <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all p-4 flex items-center gap-5">
-
-                <!-- Imagen simulada -->
-                <div class="w-32 h-28 rounded-2xl overflow-hidden flex-shrink-0">
-                  <img 
-                    src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-                    alt="Mueble"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-
-                <!-- Info -->
-                <div class="flex-1 w-full">
-
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h2 class="text-2xl font-bold">
-                        {item.title}
-                      </h2>
-
-                      <p class="text-gray-500">
-                        ${item.price}
-                      </p>
-                    </div>
-
-                    <button class="text-red-500 font-bold hover:underline">
-                      Eliminar
-                    </button>
-                  </div>
-
-                  <!-- Cantidad -->
-                  <div class="flex items-center gap-4">
-
-                    <button class="bg-gray-200 px-4 py-2 rounded-xl font-bold hover:bg-gray-300">
-                      -
-                    </button>
-
-                    <span class="font-bold text-lg">
-                      {item.quantity}
-                    </span>
-
-                    <button class="bg-gray-200 px-4 py-2 rounded-xl font-bold hover:bg-gray-300">
-                      +
-                    </button>
-
-                  </div>
-
-                </div>
-
-                <!-- Subtotal -->
-                <div class="text-right">
-                  <p class="text-gray-500 text-sm">
-                    Subtotal
-                  </p>
-
-                  <p class="text-2xl font-black">
-                    ${item.price * item.quantity}
-                  </p>
-                </div>
-
-              </div>
-            ))}
-
-            </div>
-
-          )}
-
-      </section>
-
-      <!-- Resumen -->
-      <aside class="bg-white rounded-3xl shadow-lg p-8 h-fit sticky top-28">
-
-        <h2 class="text-2xl font-bold mb-6">
-          Resumen
+      <aside class="bg-white rounded-[32px] border border-gray-200 shadow-xl p-10 h-fit lg:sticky lg:top-6">
+        <h2 class="text-3xl font-black mb-8">
+          Resumen del pedido
         </h2>
 
-        <div class="space-y-4 mb-6">
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl">
 
-          <div class="flex justify-between">
-            <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
-          </div>
-
-          <div class="flex justify-between">
-            <span>ITBMS</span>
-            <span>${tax.toFixed(2)}</span>
-          </div>
-
-          <div class="border-t pt-4 flex justify-between text-xl font-black">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-
-        </div>
-
-        <button class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all text-black font-bold py-4 rounded-2xl">
-          Proceder al pago
-        </button>
-
-      </aside>
-
-    </div>
-
-    <!-- Recomendaciones -->
-    <section class="mt-20">
-      
-      <div class="flex items-center justify-between mb-8">
-        
-        <div>
-          <h2 class="text-3xl font-black">
-            También podría interesarte
-          </h2>
-
-          <p class="text-gray-500 mt-1">
-            Complementa tu compra con estos accesorios
+          <p class="text-sm text-gray-500">
+            Artículos
           </p>
+
+          <p
+            id="summary-cart-count"
+            class="text-3xl font-black"
+          >
+            0
+          </p>
+
         </div>
 
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        {[
-          {
-            title: "Lámpara Minimalista",
-            price: 45,
-            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Mesa Auxiliar",
-            price: 90,
-            image: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Cojines Decorativos",
-            price: 25,
-            image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Alfombra Moderna",
-            price: 70,
-            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-          }
-        ].map((item) => (
-
-          <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-
-            <!-- Imagen -->
-            <div class="h-52 overflow-hidden">
-              <img
-                src={item.image}
-                alt={item.title}
-                class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
-              />
-            </div>
-
-            <!-- Info -->
-            <div class="p-5">
-
-              <div class="flex justify-between items-start mb-4">
-
-                <div>
-                  <h3 class="font-bold text-lg">
-                    {item.title}
-                  </h3>
-
-                  <p class="text-gray-500">
-                    ${item.price}
-                  </p>
-                </div>
-
-              </div>
-
-              <button class="w-full bg-gray-100 hover:bg-yellow-500 hover:text-black hover:scale-105 transition-all duration-300 font-bold py-3 rounded-2xl">
-                Añadir al carrito
-              </button>
-
-            </div>
-
+        <div class="space-y-4 mb-6">
+          <div class="flex justify-between"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+          <div class="flex justify-between"><span>ITBMS (7%)</span><span id="cart-tax">$0.00</span></div>
+          <div class="border-t pt-5 flex justify-between text-2xl font-black">
+            <span>Total</span><span id="cart-total" class="text-yellow-600">$0.00</span>
           </div>
+        </div>
 
-        ))}
-
-      </div>
-
-    </section>
-
+        <a
+          href="/checkout"
+          class="block w-full text-center bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 rounded-2xl transition-all"
+        >
+          Continuar compra
+        </a>
+      </aside>
+    </div>
   </main>
 </Layout>
+
+<script>
+  import {
+    CART_UPDATED_EVENT,
+    clearCart,
+    getCart,
+    getCartItemCount,
+    getCartTotal,
+    isCartStorageEvent,
+    removeFromCart,
+    updateQuantity,
+  } from '../lib/cart.js';
+
+  const TAX_RATE = 0.07;
+  const currencyFormatter = new Intl.NumberFormat('es-PA', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  const elements = {
+    content: document.getElementById('cart-content'),
+    description: document.getElementById('cart-description'),
+    empty: document.getElementById('empty-cart'),
+    items: document.getElementById('cart-items'),
+    clear: document.getElementById('clear-cart'),
+    cartCount: document.getElementById('summary-cart-count'),
+    subtotal: document.getElementById('cart-subtotal'),
+    tax: document.getElementById('cart-tax'),
+    total: document.getElementById('cart-total'),
+  };
+
+function createButton(label, action, productId, className, ariaLabel) {
+  const button = document.createElement('button');
+
+  button.type = 'button';
+  button.textContent = label;
+  button.dataset.action = action;
+  button.dataset.productId = productId;
+  button.className = className;
+  button.setAttribute('aria-label', ariaLabel);
+
+  return button;
+}
+
+function createCartItem(item, currencyFormatter) {
+  const article = document.createElement('article');
+
+  article.className =
+    'bg-white rounded-[32px] border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 p-8 flex items-center justify-between gap-10';
+
+  const imageContainer = document.createElement('div');
+  imageContainer.className =
+    'w-40 h-40 rounded-3xl overflow-hidden flex-shrink-0 bg-gray-100';
+
+  if (item.image) {
+    const image = document.createElement('img');
+
+    image.src = item.image;
+    image.alt = item.name;
+    image.loading = 'lazy';
+    image.className = 'w-full h-full object-cover';
+
+    imageContainer.append(image);
+  } else {
+    imageContainer.classList.add(
+      'flex',
+      'items-center',
+      'justify-center',
+      'text-4xl'
+    );
+
+    imageContainer.textContent = '🪑';
+  }
+
+  const info = document.createElement('div');
+  info.className = 'flex-1 max-w-xl';
+
+  const headingRow = document.createElement('div');
+  headingRow.className =
+    'flex justify-between items-start gap-4 mb-4';
+
+  const productInfo = document.createElement('div');
+
+  const title = document.createElement('h2');
+  title.className = 'text-3xl font-black leading-tight max-w-[500px]';
+  title.textContent = item.name;
+
+  const price = document.createElement('p');
+  price.className = 'text-lg text-gray-500 mt-1';
+  price.textContent = currencyFormatter.format(item.price);
+
+  productInfo.append(title, price);
+
+  const removeButton = createButton(
+    'Eliminar',
+    'remove',
+    item.id,
+    'text-red-500 text-sm font-semibold hover:text-red-600 transition-colors',
+    `Eliminar ${item.name} del carrito`
+  );
+
+  headingRow.append(productInfo, removeButton);
+
+  const quantityControls = document.createElement('div');
+  quantityControls.className =
+    'flex items-center gap-2 mt-6';
+
+  const decreaseButton = createButton(
+    '−',
+    'decrease',
+    item.id,
+    'bg-gray-100 border border-gray-200 w-12 h-12 rounded-2xl font-bold hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed',
+    `Disminuir cantidad de ${item.name}`
+  );
+
+  const quantity = document.createElement('span');
+  quantity.className =
+    'min-w-[50px] text-center font-black text-2xl';
+
+  quantity.textContent = String(item.quantity);
+
+  const increaseButton = createButton(
+    '+',
+    'increase',
+    item.id,
+    'bg-gray-100 border border-gray-200 w-12 h-12 rounded-2xl font-bold hover:bg-gray-200 transition-all',
+    `Aumentar cantidad de ${item.name}`
+  );
+
+  increaseButton.disabled = item.quantity >= 99;
+
+  quantityControls.append(
+    decreaseButton,
+    quantity,
+    increaseButton
+  );
+
+  info.append(
+    title,
+    price,
+    removeButton,
+    quantityControls
+  );
+
+  const lineTotal = document.createElement('div');
+
+  lineTotal.className =
+    'flex flex-col items-end justify-end self-end min-w-[240px]';
+
+  const lineLabel = document.createElement('p');
+
+  lineLabel.className =
+    'text-gray-400 text-xs uppercase tracking-[0.25em] mb-2';
+
+  lineLabel.textContent = 'Subtotal';
+
+  const lineValue = document.createElement('p');
+
+  lineValue.className =
+    'text-2xl font-black text-yellow-600 leading-none';
+
+  lineValue.textContent = currencyFormatter.format(
+    item.price * item.quantity
+  );
+
+  lineTotal.append(
+    lineLabel,
+    lineValue
+  );
+
+  article.append(
+    imageContainer,
+    info,
+    lineTotal
+  );
+
+  return article;
+}
+
+  function renderCart() {
+    const cart = getCart();
+    const isEmpty = cart.length === 0;
+    elements.empty?.classList.toggle('hidden', !isEmpty);
+    elements.content?.classList.toggle('hidden', isEmpty);
+    elements.clear?.classList.toggle('hidden', isEmpty);
+
+    const count = getCartItemCount(cart);
+    if (elements.description) {
+      elements.description.textContent = isEmpty
+        ? 'Aún no has añadido productos.'
+        : `${count} ${count === 1 ? 'producto' : 'productos'} en tu carrito`;
+    }
+    if (elements.cartCount) {
+      elements.cartCount.textContent = String(count);
+    }
+    if (elements.items) {
+      elements.items.replaceChildren(
+        ...cart.map(item => createCartItem(item, currencyFormatter))
+  );
+    }
+
+    const subtotal = getCartTotal(cart);
+    const tax = subtotal * TAX_RATE;
+    if (elements.subtotal) elements.subtotal.textContent = currencyFormatter.format(subtotal);
+    if (elements.tax) elements.tax.textContent = currencyFormatter.format(tax);
+    if (elements.total) elements.total.textContent = currencyFormatter.format(subtotal + tax);
+  }
+
+  elements.items?.addEventListener('click', (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest('button[data-action][data-product-id]')
+      : null;
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    const productId = button.dataset.productId;
+    const item = getCart().find((product) => product.id === productId);
+    if (!item) return;
+    if (button.dataset.action === 'remove') removeFromCart(productId);
+    if (button.dataset.action === 'decrease') updateQuantity(productId, item.quantity - 1);
+    if (button.dataset.action === 'increase') updateQuantity(productId, item.quantity + 1);
+  });
+
+  elements.clear?.addEventListener('click', () => {
+    if (window.confirm('¿Quieres vaciar todos los productos del carrito?')) clearCart();
+  });
+
+  window.addEventListener(CART_UPDATED_EVENT, renderCart);
+  window.addEventListener('storage', (event) => {
+    if (isCartStorageEvent(event)) renderCart();
+  });
+
+  renderCart();
+</script>
