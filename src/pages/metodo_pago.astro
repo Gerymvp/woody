@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Método de Pago - Swoody">
+    <Header />
+
+    <main class="min-h-screen bg-white flex justify-center items-center">
+        <div class="w-full max-w-2xl p-10">
+
+            <h1 class="text-4xl font-bold mb-8">
+                Selecciona un método de pago
+            </h1>
+
+            <div class="space-y-4">
+
+                <label class="block border rounded-2xl p-5 cursor-pointer hover:bg-gray-50">
+                    <input
+                        type="radio"
+                        name="metodo"
+                        value="tarjeta"
+                        checked
+                        class="mr-3"
+                    />
+                    💳 Tarjeta de Crédito / Débito
+                </label>
+
+                <label class="block border rounded-2xl p-5 cursor-pointer hover:bg-gray-50">
+                    <input
+                        type="radio"
+                        name="metodo"
+                        value="yappy"
+                        class="mr-3"
+                    />
+                    📱 Yappy
+                </label>
+
+            </div>
+
+            <button
+                id="continuarPago"
+                class="mt-8 bg-black text-white px-8 py-4 rounded-xl"
+            >
+                Continuar
+            </button>
+
+        </div>
+    </main>
+</Layout>
+
+<script>
+document.getElementById("continuarPago")
+.addEventListener("click", async () => {
+
+    const carrito = [
+        {
+            nombre: "Sofá Moderno",
+            precio: 499.99,
+            cantidad: 1
+        }
+    ];
+
+    const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            carrito
+        })
+    });
+
+    const data = await response.json();
+
+    if(data.url){
+        window.location.href = data.url;
+    }
+});
+</script>

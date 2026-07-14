@@ -1,0 +1,49 @@
+---
+// src/pages/catalogo.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ProductCard from '../components/catalogo/ProductCard.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch de productos desde la tabla que creamos
+const { data: productos, error } = await supabase
+  .from('productos')
+  .select('*');
+
+if (error) {
+  console.error('Error cargando productos:', error.message);
+}
+
+const categories = ["Sala", "Comedor", "Dormitorio", "Empotrados", "Oficina"];
+---
+
+<Layout title="Catálogo - Swoody">
+  <Header />
+
+  <div class="flex min-h-screen bg-white">
+    <!-- Sidebar e interfaz... -->
+    <main class="flex-1 p-8">
+
+    
+      <a
+        href="/admin/productos"
+        class="inline-block mb-6 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+      >
+        + Ir a Admin Productos
+      </a>
+
+      <!-- GRID DE PRODUCTOS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {productos?.map((prod) => (
+          <ProductCard 
+            titulo={prod.titulo}
+            precio={prod.precio}
+            imagen={prod.imagen_url}
+            categoria={prod.categoria}
+          />
+        ))}
+      </div>
+
+    </main>
+  </div>
+</Layout>

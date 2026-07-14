@@ -1,0 +1,15 @@
+src/pages/
+├── index.astro                # Landing page con mueblerías destacadas
+├── catalogo.astro             # Buscador global de muebles
+├── carrito.astro              # Resumen de compra
+├── metodo_pago.astro          # Checkout
+├── muebleria/
+│   └── [slug].astro           # Perfil de cada mueblería (dinámico)
+├── producto/
+│   └── [id].astro             # Detalle del mueble (dinámico)
+├── usuario/
+│   ├── perfil.astro           # Datos del cliente
+│   └── pedidos.astro          # Historial de compras
+└── admin/
+    ├── panel.astro            # Dashboard general
+    └── gestion_pedidos.astro  # Control de entregas
