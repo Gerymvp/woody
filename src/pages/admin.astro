@@ -54,11 +54,13 @@ import MetricsDashboard from '../components/admin/MetricsDashboard.astro';
         <main class="flex-1 bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm">
           
           <div id="content-productos">
-            <ProductManager />
+            <!-- Activamos la hidratación del cliente -->
+            <ProductManager client:load />
           </div>
 
           <div id="content-metricas" class="hidden">
-            <MetricsDashboard />
+            <!-- Activamos la hidratación del cliente -->
+            <MetricsDashboard client:load />
           </div>
 
         </main>
@@ -71,8 +73,12 @@ import MetricsDashboard from '../components/admin/MetricsDashboard.astro';
 <script>
   import { trackEvent } from '../lib/tracker';
   
-  // Registrar visitas a la zona administrativa
-  trackEvent('visita_pagina', 'admin');
+  // Registrar visitas protegiendo de errores fatales
+  try {
+    trackEvent('visita_pagina', 'admin');
+  } catch (e) {
+    console.error('Error en el tracker:', e);
+  }
 
   const btnProductos = document.getElementById('tab-productos');
   const btnMetricas = document.getElementById('tab-metricas');
@@ -106,5 +112,4 @@ import MetricsDashboard from '../components/admin/MetricsDashboard.astro';
 
   btnProductos?.addEventListener('click', () => switchTab(false));
   btnMetricas?.addEventListener('click', () => switchTab(true));
-  trackEvent('visita_pagina', 'admin');
 </script>
