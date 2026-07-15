@@ -1,5 +1,6 @@
 ---
 // src/components/admin/MetricsDashboard.astro
+// Esqueleto HTML de las métricas
 ---
 <div class="space-y-6">
   <div>
@@ -58,46 +59,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  import { supabase } from '../../lib/supabase';
-
-  async function fetchMetrics() {
-    const { data, error } = await supabase
-      .from('metricas_eventos')
-      .select('evento_tipo');
-
-    if (error) {
-      console.error('Error al recuperar métricas:', error);
-      return;
-    }
-
-    // Inicializar contadores
-    let visitas = 0;
-    let carrito = 0;
-    let login = 0;
-    let catalogo = 0;
-
-    // Calcular totales
-    data.forEach(item => {
-      if (item.evento_tipo === 'visita_pagina') visitas++;
-      else if (item.evento_tipo === 'click_carrito') carrito++;
-      else if (item.evento_tipo === 'click_login') login++;
-      else if (item.evento_tipo === 'click_catalogo') catalogo++;
-    });
-
-    // Actualizar el DOM
-    const elVisitas = document.getElementById('metric-visitas');
-    const elCarrito = document.getElementById('metric-carrito');
-    const elLogin = document.getElementById('metric-login');
-    const elCatalogo = document.getElementById('metric-catalogo');
-
-    if (elVisitas) elVisitas.innerText = String(visitas);
-    if (elCarrito) elCarrito.innerText = String(carrito);
-    if (elLogin) elLogin.innerText = String(login);
-    if (elCatalogo) elCatalogo.innerText = String(catalogo);
-  }
-
-  // Carga inicial de métricas
-  fetchMetrics();
-</script>
