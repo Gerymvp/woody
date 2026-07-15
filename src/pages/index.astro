@@ -23,3 +23,9 @@ import Hero from '../components/Hero.astro';
 		</div>
 	</main>
 </Layout>
+
+<script>
+  import { trackEvent } from '../lib/tracker';
+  // Registrar visita a la página principal
+  trackEvent('visita_pagina', 'home');
+</script>
