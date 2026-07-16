@@ -97,6 +97,8 @@
 </header>
 
 <script>
+  import { trackEvent } from '../lib/tracker';
+
   const arrow = document.getElementById("profileArrow");
   const menu = document.getElementById("profileMenu");
 
@@ -107,5 +109,25 @@
 
   document.addEventListener("click", () => {
     menu?.classList.add("hidden");
+  });
+
+  // --- Captura de Métricas ---
+
+  // Click en Carrito
+  const carritoBtn = document.querySelector('a[href="/carrito"]');
+  carritoBtn?.addEventListener('click', () => {
+    trackEvent('click_carrito');
+  });
+
+  // Click en Iniciar Sesión
+  const loginBtn = document.querySelector('a[href="https://www.swoodypty.com/login"]');
+  loginBtn?.addEventListener('click', () => {
+    trackEvent('click_login');
+  });
+
+  // Click en el enlace lateral de "Ver Catálogo Público" en el sidebar del Admin
+  const catalogoSidebarBtn = document.querySelector('a[href="/catalogo"]');
+  catalogoSidebarBtn?.addEventListener('click', () => {
+    trackEvent('click_catalogo', 'sidebar_admin');
   });
 </script>

@@ -1,0 +1,122 @@
+---
+// src/components/admin/ProductManager.astro
+// Esqueleto HTML del gestor de productos
+---
+
+<div class="space-y-8">
+  <div class="flex justify-between items-center border-b pb-4">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800">Inventario de Productos</h2>
+      <p class="text-sm text-gray-500">Crea, edita o elimina los productos del catálogo de Swoody.</p>
+    </div>
+    <button 
+      id="open-create-modal"
+      class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
+    >
+      + Nuevo Producto
+    </button>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wider">
+            <th class="p-4">Imagen</th>
+            <th class="p-4">Producto</th>
+            <th class="p-4">Categoría</th>
+            <th class="p-4">Precio</th>
+            <th class="p-4 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="products-table-body" class="divide-y divide-gray-50 text-sm text-gray-700">
+          <tr>
+            <td colspan="5" class="p-8 text-center text-gray-400">Cargando productos...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="product-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modal-title" class="text-lg font-bold text-gray-900">Agregar Producto</h3>
+        <button id="close-modal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      </div>
+
+      <form id="product-form" class="space-y-4">
+        <input type="hidden" id="product-id" name="id" />
+        
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre del Producto</label>
+          <input 
+            type="text" 
+            id="product-titulo" 
+            name="titulo" 
+            required 
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
+            placeholder="Ej. Cama Queen"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Categoría</label>
+          <select 
+            id="product-categoria" 
+            name="categoria" 
+            required
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm bg-white"
+          >
+            <option value="Sala">Sala</option>
+            <option value="Comedor">Comedor</option>
+            <option value="Dormitorio">Dormitorio</option>
+            <option value="Empotrados">Empotrados</option>
+            <option value="Oficina">Oficina</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Precio ($)</label>
+          <input 
+            type="number" 
+            step="0.01" 
+            id="product-precio" 
+            name="precio" 
+            required 
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">URL de la Imagen</label>
+          <input 
+            type="url" 
+            id="product-imagen" 
+            name="imagen_url" 
+            required 
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+        </div>
+
+        <div class="flex gap-2 pt-4 border-t">
+          <button 
+            type="button" 
+            id="cancel-modal"
+            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-semibold transition"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="flex-1 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
+          >
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
