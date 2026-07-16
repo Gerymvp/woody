@@ -1,0 +1,293 @@
+---
+// src/pages/admin.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro'; 
+import ProductManager from '../components/admin/ProductManager.astro'; 
+import MetricsDashboard from '../components/admin/MetricsDashboard.astro';
+---
+
+<Layout title="Panel de Administración - Swoody">
+  <Header />
+  
+  <div class="min-h-screen bg-gray-50/50"> 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"> 
+      
+      <div class="flex flex-col md:flex-row gap-8"> 
+        
+        <aside class="w-full md:w-64 shrink-0"> 
+          <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">  
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Swoody Admin</p>  
+    
+            <button 
+              id="tab-productos"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-950 text-white font-medium text-sm transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              Productos
+            </button>
+
+            <button 
+              id="tab-metricas"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Métricas de Uso
+            </button>
+
+            <a 
+              href="/" 
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Ver Catálogo Público
+            </a>
+          </div>
+        </aside>
+
+        <main class="flex-1 bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm">
+          
+          <div id="content-productos">
+            <ProductManager />
+          </div>
+
+          <div id="content-metricas" class="hidden">
+            <MetricsDashboard />
+          </div>
+
+        </main>
+
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  import { trackEvent } from '../lib/tracker';
+
+  // --- INTERFAZ: MANEJO DE PESTAÑAS ---
+  const btnProductos = document.getElementById('tab-productos');
+  const btnMetricas = document.getElementById('tab-metricas');
+  const contentProductos = document.getElementById('content-productos');
+  const contentMetricasResolved = document.getElementById('content-metricas');
+
+  function switchTab(showMetrics: boolean) {
+    if (showMetrics) {
+      btnMetricas?.classList.add('bg-gray-950', 'text-white');
+      btnMetricas?.classList.remove('text-gray-600', 'hover:bg-gray-50');
+      btnProductos?.classList.remove('bg-gray-950', 'text-white');
+      btnProductos?.classList.add('text-gray-600', 'hover:bg-gray-50');
+
+      contentProductos?.classList.add('hidden');
+      contentMetricasResolved?.classList.remove('hidden');
+      
+      // Cargar métricas al cambiar de pestaña
+      fetchMetrics();
+    } else {
+      btnProductos?.classList.add('bg-gray-950', 'text-white');
+      btnProductos?.classList.remove('text-gray-600', 'hover:bg-gray-50');
+      btnMetricas?.classList.remove('bg-gray-950', 'text-white');
+      btnMetricas?.classList.add('text-gray-600', 'hover:bg-gray-50');
+
+      contentMetricasResolved?.classList.add('hidden');
+      contentProductos?.classList.remove('hidden');
+    }
+  }
+
+  btnProductos?.addEventListener('click', () => switchTab(false));
+  btnMetricas?.addEventListener('click', () => switchTab(true));
+
+
+  // --- LOGICA 1: SISTEMA DE MÉTRICAS ---
+  async function fetchMetrics() {
+    try {
+      const { data, error } = await supabase
+        .from('metricas_eventos')
+        .select('evento_tipo');
+
+      if (error) throw error;
+
+      let visitas = 0, carrito = 0, login = 0, catalogo = 0;
+
+      data?.forEach(item => {
+        if (item.evento_tipo === 'visita_pagina') visitas++;
+        else if (item.evento_tipo === 'click_carrito') carrito++;
+        else if (item.evento_tipo === 'click_login') login++;
+        else if (item.evento_tipo === 'click_catalogo') catalogo++;
+      });
+
+      const elVisitas = document.getElementById('metric-visitas');
+      const elCarrito = document.getElementById('metric-carrito');
+      const elLogin = document.getElementById('metric-login');
+      const elCatalogo = document.getElementById('metric-catalogo');
+
+      if (elVisitas) elVisitas.innerText = String(visitas);
+      if (elCarrito) elCarrito.innerText = String(carrito);
+      if (elLogin) elLogin.innerText = String(login);
+      if (elCatalogo) elCatalogo.innerText = String(catalogo);
+    } catch (err) {
+      console.error('Error al recuperar métricas de Supabase:', err);
+    }
+  }
+
+
+  // --- LOGICA 2: INVENTARIO DE PRODUCTOS ---
+  interface Producto {
+    id?: string | number;
+    titulo: string;
+    precio: number;
+    imagen_url: string;
+    categoria: string;
+  }
+
+  let localProducts: Producto[] = [];
+  const tableBody = document.getElementById('products-table-body');
+  const modal = document.getElementById('product-modal');
+  const form = document.getElementById('product-form') as HTMLFormElement;
+  const modalTitle = document.getElementById('modal-title');
+
+  const inputId = document.getElementById('product-id') as HTMLInputElement;
+  const inputTitulo = document.getElementById('product-titulo') as HTMLInputElement;
+  const inputCategoria = document.getElementById('product-categoria') as HTMLInputElement;
+  const inputPrecio = document.getElementById('product-precio') as HTMLInputElement;
+  const inputImagen = document.getElementById('product-imagen') as HTMLInputElement;
+
+  async function loadProducts() {
+    try {
+      const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      localProducts = data || [];
+      renderProducts();
+    } catch (err) {
+      console.error('Error cargando productos:', err);
+    }
+  }
+
+  function renderProducts() {
+    if (!tableBody) return;
+    if (localProducts.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">No hay productos en el catálogo.</td></tr>`;
+      return;
+    }
+
+    tableBody.innerHTML = localProducts.map(prod => `
+      <tr class="hover:bg-gray-50/50 transition-colors" data-id="${prod.id}">
+        <td class="p-4">
+          <img src="${prod.imagen_url}" alt="${prod.titulo}" class="w-12 h-12 object-cover rounded-xl border border-gray-100" />
+        </td>
+        <td class="p-4 font-semibold text-gray-950">${prod.titulo}</td>
+        <td class="p-4">
+          <span class="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-full uppercase tracking-wider font-medium">${prod.categoria}</span>
+        </td>
+        <td class="p-4 font-medium text-gray-900">$${Number(prod.precio).toFixed(2)}</td>
+        <td class="p-4 text-right space-x-2">
+          <button class="edit-btn text-blue-600 hover:text-blue-800 font-medium text-xs px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded-lg transition" data-id="${prod.id}">Editar</button>
+          <button class="delete-btn text-red-600 hover:text-red-800 font-medium text-xs px-2 py-1 bg-red-50 hover:bg-red-100 rounded-lg transition" data-id="${prod.id}">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+
+    document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', handleEdit));
+    document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDelete));
+  }
+
+  function showModal(editMode = false) {
+    modal?.classList.remove('hidden');
+    if (modalTitle) modalTitle.innerText = editMode ? 'Editar Producto' : 'Agregar Producto';
+  }
+
+  function hideModal() {
+    modal?.classList.add('hidden');
+    form?.reset();
+    if (inputId) inputId.value = '';
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = inputId.value;
+    const productPayload = {
+      titulo: inputTitulo.value,
+      categoria: inputCategoria.value,
+      precio: parseFloat(inputPrecio.value),
+      imagen_url: inputImagen.value
+    };
+
+    try {
+      if (id) {
+        const { error } = await supabase
+          .from('productos')
+          .update(productPayload)
+          .eq('id', id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('productos').insert([productPayload]);
+        if (error) throw error;
+      }
+      hideModal();
+      await loadProducts();
+    } catch (err: any) {
+      alert('Error en la operación: ' + err.message);
+    }
+  });
+
+  function handleEdit(e: Event) {
+    const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
+    const product = localProducts.find(p => String(p.id) === String(id));
+    if (!product) return;
+
+    if (inputId) inputId.value = product.id ? String(product.id) : '';
+    if (inputTitulo) inputTitulo.value = product.titulo;
+    if (inputCategoria) inputCategoria.value = product.categoria;
+    if (inputPrecio) inputPrecio.value = String(product.precio);
+    if (inputImagen) inputImagen.value = product.imagen_url;
+
+    showModal(true);
+  }
+
+  async function handleDelete(e: Event) {
+    const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
+    const product = localProducts.find(p => String(p.id) === String(id));
+    if (!product || !confirm(`¿Estás seguro de que quieres eliminar "${product.titulo}"?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('productos')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      await loadProducts();
+    } catch (err: any) {
+      alert('Error al eliminar: ' + err.message);
+    }
+  }
+
+  // Interfaz Listeners del Modal
+  document.getElementById('open-create-modal')?.addEventListener('click', () => showModal(false));
+  document.getElementById('close-modal')?.addEventListener('click', hideModal);
+  document.getElementById('cancel-modal')?.addEventListener('click', hideModal);
+
+
+  // --- INICIALIZACIÓN ---
+  try {
+    trackEvent('visita_pagina', 'admin');
+  } catch (e) {
+    console.error('Error en el tracker:', e);
+  }
+
+  // Carga de datos iniciales
+  loadProducts();
+  fetchMetrics();
+</script>
