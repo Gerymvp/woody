@@ -3,6 +3,8 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import Catalogo from './catalogo.astro';
+import ProductCard from '../components/catalogo/ProductCard.astro';
 ---
 
 <Layout title="Swoody - Muebles a domicilio">
@@ -12,15 +14,7 @@ import Hero from '../components/Hero.astro';
 	<Hero />
 
 	<main class="max-w-7xl mx-auto p-8">
-		<!-- Mueblerías Asociadas -->
-		<h2 class="text-2xl font-bold mb-6">Mueblerías Asociadas</h2>
-		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-			{Array(4).fill(0).map((_, i) => (
-				<div class="bg-gray-200 h-32 rounded-xl flex items-center justify-center font-bold text-gray-400 p-4 text-center">
-					Logo Mueblería {i+1}
-				</div>
-			))}
-		</div>
+		<Catalogo />
 	</main>
 </Layout>
 
