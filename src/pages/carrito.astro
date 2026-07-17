@@ -1,278 +1,365 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
-
-const cartItems = [
-  {
-    title: "Sofá Moderno",
-    price: 120,
-    quantity: 2
-  },
-  {
-    title: "Mesa de Centro",
-    price: 80,
-    quantity: 1
-  }
-];
-
-const subtotal = cartItems.reduce(
-  (acc, item) => acc + item.price * item.quantity,
-  0
-);
-
-const tax = subtotal * 0.07;
-const total = subtotal + tax;
 ---
 
 <Layout title="Carrito - Swoody">
   <Header />
 
-  <!-- Botón flotante carrito -->
-  <a 
-    href="/carrito"
-    class="fixed bottom-8 right-8 bg-yellow-500 hover:bg-yellow-400 shadow-2xl hover:scale-110 transition-all duration-300 px-6 py-4 rounded-full font-bold z-50"
-  >
-    🛒 {cartItems.length} productos
-  </a>
+  <main class="min-h-screen bg-gray-50">
+    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
+      <div class="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-2xl">
+          <p class="mb-2 text-sm font-bold uppercase tracking-wide text-yellow-600">
+            Tu selección
+          </p>
+          <h1 class="text-4xl font-black leading-tight text-gray-950 sm:text-5xl">
+            Mi Carrito
+          </h1>
 
-  <main class="max-w-7xl mx-auto p-8">
-    
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+          <div class="mt-5 flex flex-wrap items-center gap-2 text-xs font-bold sm:text-sm">
+            <span class="rounded-full bg-yellow-500 px-4 py-2 text-black shadow-sm">
+              Carrito
+            </span>
+            <span class="h-1 w-8 rounded-full bg-yellow-500 sm:w-12"></span>
+            <span class="rounded-full bg-white px-4 py-2 text-gray-400 ring-1 ring-gray-200">
+              Pago
+            </span>
+            <span class="h-1 w-8 rounded-full bg-gray-300 sm:w-12"></span>
+            <span class="rounded-full bg-white px-4 py-2 text-gray-400 ring-1 ring-gray-200">
+              Confirmación
+            </span>
+          </div>
 
-      <h1 class="text-4xl font-black">
-        Mi Carrito
-      </h1>
+          <p
+            id="cart-description"
+            class="mt-5 inline-flex rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm"
+            aria-live="polite"
+          ></p>
+        </div>
 
-      <a
-        href="/catalogo"
-        class="bg-gray-100 hover:bg-yellow-500 hover:scale-105 transition-all duration-300 px-6 py-3 rounded-2xl font-bold text-center"
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <button
+            id="clear-cart"
+            type="button"
+            class="hidden rounded-2xl border border-red-200 bg-white px-5 py-3 text-center font-bold text-red-600 transition-all hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-100"
+          >
+            Vaciar carrito
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="empty-cart"
+        class="hidden overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-xl"
       >
-        Seguir comprando
-      </a>
-
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-      <!-- Productos -->
-      <section class="lg:col-span-2 space-y-6">
-
-        {cartItems.length === 0 ? (
-
-          <div class="bg-white rounded-3xl shadow-lg p-16 text-center">
-
-            <div class="text-7xl mb-6">
+        <div class="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+          <div class="p-8 sm:p-10 lg:p-14">
+            <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-yellow-100 text-3xl">
               🛒
             </div>
-
-            <h2 class="text-3xl font-black mb-4">
-              Tu carrito está vacío
+            <h2 class="text-3xl font-black leading-tight text-gray-950 sm:text-4xl">
+              Tu carrito está listo para empezar.
             </h2>
-
-            <p class="text-gray-500 mb-8">
-              Explora nuestro catálogo y encuentra muebles increíbles para tu hogar.
+            <p class="mt-4 max-w-xl text-base leading-7 text-gray-600">
+              Explora el catálogo y guarda aquí los muebles que quieras comparar antes de pagar.
             </p>
-
             <a
               href="/catalogo"
-              class="inline-block bg-yellow-500 hover:bg-yellow-400 hover:scale-105 transition-all duration-300 px-8 py-4 rounded-2xl font-bold"
+              class="mt-8 inline-flex w-full items-center justify-center rounded-2xl bg-yellow-500 px-8 py-4 font-black text-black transition-colors hover:bg-yellow-400 sm:w-auto"
             >
-              Explorar catálogo
+              Volver al catálogo
             </a>
-
           </div>
-
-        ) : (
-
-          <div class="space-y-6">
-
-            {cartItems.map((item) => (
-              <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all p-4 flex items-center gap-5">
-
-                <!-- Imagen simulada -->
-                <div class="w-32 h-28 rounded-2xl overflow-hidden flex-shrink-0">
-                  <img 
-                    src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-                    alt="Mueble"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-
-                <!-- Info -->
-                <div class="flex-1 w-full">
-
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h2 class="text-2xl font-bold">
-                        {item.title}
-                      </h2>
-
-                      <p class="text-gray-500">
-                        ${item.price}
-                      </p>
-                    </div>
-
-                    <button class="text-red-500 font-bold hover:underline">
-                      Eliminar
-                    </button>
-                  </div>
-
-                  <!-- Cantidad -->
-                  <div class="flex items-center gap-4">
-
-                    <button class="bg-gray-200 px-4 py-2 rounded-xl font-bold hover:bg-gray-300">
-                      -
-                    </button>
-
-                    <span class="font-bold text-lg">
-                      {item.quantity}
-                    </span>
-
-                    <button class="bg-gray-200 px-4 py-2 rounded-xl font-bold hover:bg-gray-300">
-                      +
-                    </button>
-
-                  </div>
-
-                </div>
-
-                <!-- Subtotal -->
-                <div class="text-right">
-                  <p class="text-gray-500 text-sm">
-                    Subtotal
-                  </p>
-
-                  <p class="text-2xl font-black">
-                    ${item.price * item.quantity}
-                  </p>
-                </div>
-
-              </div>
-            ))}
-
+          <div class="hidden min-h-72 bg-gradient-to-br from-yellow-100 via-white to-gray-100 p-10 lg:flex lg:items-center lg:justify-center">
+            <div class="rounded-[32px] bg-white/80 p-8 text-center shadow-lg ring-1 ring-gray-200">
+              <p class="text-7xl" aria-hidden="true">🪑</p>
+              <p class="mt-5 text-sm font-bold uppercase tracking-wide text-gray-500">
+                Swoody
+              </p>
             </div>
-
-          )}
-
-      </section>
-
-      <!-- Resumen -->
-      <aside class="bg-white rounded-3xl shadow-lg p-8 h-fit sticky top-28">
-
-        <h2 class="text-2xl font-bold mb-6">
-          Resumen
-        </h2>
-
-        <div class="space-y-4 mb-6">
-
-          <div class="flex justify-between">
-            <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
           </div>
-
-          <div class="flex justify-between">
-            <span>ITBMS</span>
-            <span>${tax.toFixed(2)}</span>
-          </div>
-
-          <div class="border-t pt-4 flex justify-between text-xl font-black">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-
         </div>
-
-        <button class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all text-black font-bold py-4 rounded-2xl">
-          Proceder al pago
-        </button>
-
-      </aside>
-
-    </div>
-
-    <!-- Recomendaciones -->
-    <section class="mt-20">
-      
-      <div class="flex items-center justify-between mb-8">
-        
-        <div>
-          <h2 class="text-3xl font-black">
-            También podría interesarte
-          </h2>
-
-          <p class="text-gray-500 mt-1">
-            Complementa tu compra con estos accesorios
-          </p>
-        </div>
-
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div id="cart-content" class="hidden grid-cols-1 items-start gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
+        <section
+          id="cart-items"
+          class="space-y-4"
+          aria-label="Productos del carrito"
+        ></section>
 
-        {[
-          {
-            title: "Lámpara Minimalista",
-            price: 45,
-            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Mesa Auxiliar",
-            price: 90,
-            image: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Cojines Decorativos",
-            price: 25,
-            image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?q=80&w=800&auto=format&fit=crop"
-          },
-          {
-            title: "Alfombra Moderna",
-            price: 70,
-            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
-          }
-        ].map((item) => (
-
-          <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-
-            <!-- Imagen -->
-            <div class="h-52 overflow-hidden">
-              <img
-                src={item.image}
-                alt={item.title}
-                class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
-              />
+        <aside class="rounded-[28px] border border-gray-200 bg-white p-5 shadow-xl sm:p-6 lg:sticky lg:top-6">
+          <div class="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-black text-gray-950">
+                Resumen
+              </h2>
+              <p class="mt-1 text-sm text-gray-500">
+                Impuestos incluidos al calcular el total.
+              </p>
             </div>
-
-            <!-- Info -->
-            <div class="p-5">
-
-              <div class="flex justify-between items-start mb-4">
-
-                <div>
-                  <h3 class="font-bold text-lg">
-                    {item.title}
-                  </h3>
-
-                  <p class="text-gray-500">
-                    ${item.price}
-                  </p>
-                </div>
-
-              </div>
-
-              <button class="w-full bg-gray-100 hover:bg-yellow-500 hover:text-black hover:scale-105 transition-all duration-300 font-bold py-3 rounded-2xl">
-                Añadir al carrito
-              </button>
-
+            <div class="rounded-2xl bg-gray-50 px-4 py-3 text-center">
+              <p class="text-xs font-bold uppercase tracking-wide text-gray-500">
+                Artículos
+              </p>
+              <p id="summary-cart-count" class="text-2xl font-black text-gray-950">
+                0
+              </p>
             </div>
-
           </div>
 
-        ))}
+          <div class="space-y-4 rounded-3xl bg-gray-50 p-5">
+            <div class="flex items-center justify-between gap-4 text-gray-700">
+              <span>Subtotal</span>
+              <span id="cart-subtotal" class="font-bold text-gray-950">$0.00</span>
+            </div>
+            <div class="flex items-center justify-between gap-4 text-gray-700">
+              <span>ITBMS (7%)</span>
+              <span id="cart-tax" class="font-bold text-gray-950">$0.00</span>
+            </div>
+            <div class="border-t border-gray-200 pt-4">
+              <div class="flex items-end justify-between gap-4">
+                <span class="text-lg font-black text-gray-950">Total</span>
+                <span id="cart-total" class="text-3xl font-black text-yellow-600">$0.00</span>
+              </div>
+            </div>
+          </div>
 
+          <a
+            id="checkout-link"
+            href="/checkout"
+            class="mt-6 block w-full rounded-2xl bg-yellow-500 px-6 py-4 text-center font-black text-black transition-all hover:bg-yellow-400 focus:outline-none focus:ring-4 focus:ring-yellow-200"
+          >
+            Continuar compra
+          </a>
+          <a
+            href="/catalogo"
+            class="mt-3 block w-full rounded-2xl bg-white px-6 py-4 text-center font-black text-gray-950 ring-1 ring-gray-200 transition-colors hover:bg-yellow-50 hover:ring-yellow-300"
+          >
+            Seguir comprando
+          </a>
+        </aside>
       </div>
-
     </section>
-
   </main>
 </Layout>
+
+<script>
+  import {
+    CART_UPDATED_EVENT,
+    clearCart,
+    getCart,
+    getCartItemCount,
+    getCartTotal,
+    isCartStorageEvent,
+    removeFromCart,
+    updateQuantity,
+  } from '../lib/cart.js';
+
+  const TAX_RATE = 0.07;
+  const currencyFormatter = new Intl.NumberFormat('es-PA', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  const elements = {
+    content: document.getElementById('cart-content'),
+    description: document.getElementById('cart-description'),
+    empty: document.getElementById('empty-cart'),
+    items: document.getElementById('cart-items'),
+    clear: document.getElementById('clear-cart'),
+    checkout: document.getElementById('checkout-link'),
+    cartCount: document.getElementById('summary-cart-count'),
+    subtotal: document.getElementById('cart-subtotal'),
+    tax: document.getElementById('cart-tax'),
+    total: document.getElementById('cart-total'),
+  };
+
+  function createButton(label, action, productId, className, ariaLabel) {
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.textContent = label;
+    button.dataset.action = action;
+    button.dataset.productId = productId;
+    button.className = className;
+    button.setAttribute('aria-label', ariaLabel);
+
+    return button;
+  }
+
+  function createCartItem(item, currencyFormatter) {
+    const article = document.createElement('article');
+    article.className =
+      'relative grid gap-5 rounded-[28px] border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:grid-cols-[144px_minmax(0,1fr)] sm:p-4 lg:grid-cols-[156px_minmax(0,0.7fr)_190px] xl:grid-cols-[160px_minmax(0,0.7fr)_200px]';
+
+    const imageContainer = document.createElement('div');
+    imageContainer.className =
+      'aspect-square w-full overflow-hidden rounded-[22px] bg-gray-100 sm:w-[144px] lg:w-[156px] xl:w-[160px]';
+
+    if (item.image) {
+      const image = document.createElement('img');
+
+      image.src = item.image;
+      image.alt = item.name;
+      image.loading = 'lazy';
+      image.className = 'h-full w-full object-cover';
+
+      imageContainer.append(image);
+    } else {
+      imageContainer.className += ' flex items-center justify-center text-sm font-bold text-gray-500';
+      imageContainer.textContent = 'Sin imagen';
+    }
+
+    const details = document.createElement('div');
+    details.className = 'min-w-0 flex flex-col gap-6 lg:self-start';
+
+    const productInfo = document.createElement('div');
+    productInfo.className = 'min-w-0 max-w-md';
+
+    const title = document.createElement('h2');
+    title.className = 'break-words text-2xl font-semibold tracking-tight leading-tight text-gray-950';
+    title.textContent = item.name;
+
+    const quantityControls = createQuantityControls(item);
+
+    productInfo.append(title);
+    details.append(productInfo, quantityControls);
+
+    const purchaseColumn = createPurchaseColumn(item, currencyFormatter);
+
+    article.append(imageContainer, details, purchaseColumn);
+
+    return article;
+  }
+
+  function createPurchaseColumn(item, currencyFormatter) {
+    const column = document.createElement('div');
+    column.className =
+      'flex h-full flex-col justify-between gap-4 rounded-[28px] bg-transparent lg:col-span-1 lg:items-end lg:self-start';
+
+    const removeButton = createButton(
+      '',
+      'remove',
+      item.id,
+      'absolute right-6 top-6 rounded-lg border border-transparent bg-transparent p-2 text-gray-500 transition-colors duration-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-100',
+      `Eliminar ${item.name} del carrito`
+    );
+    removeButton.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+
+    const priceValue = document.createElement('p');
+    priceValue.className = 'absolute right-6 bottom-6 text-xl font-semibold text-gray-900';
+    priceValue.style.transform = 'translateY(-6px)';
+    priceValue.textContent = `$${Number(item.price).toFixed(2)}`;
+
+    column.append(removeButton, priceValue);
+    return column;
+  }
+
+  function createQuantityControls(item) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex items-center gap-2 mt-12';
+    const decreaseButton = createButton(
+      '-',
+      'decrease',
+      item.id,
+      'flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-2xl font-black transition-colors hover:bg-yellow-50 focus:outline-none focus:ring-4 focus:ring-gray-200',
+      `Disminuir cantidad de ${item.name}`
+    );
+
+    const quantity = document.createElement('span');
+    quantity.className =
+      'flex h-9 min-w-14 items-center justify-center rounded-xl bg-white px-3 text-lg font-black text-gray-950 ring-1 ring-gray-200';
+    quantity.textContent = String(item.quantity);
+    quantity.setAttribute('aria-label', `Cantidad: ${item.quantity}`);
+    const increaseButton = createButton(
+      '+',
+      'increase',
+      item.id,
+      'flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-2xl font-black transition-colors hover:bg-yellow-50 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50',
+      `Aumentar cantidad de ${item.name}`
+    );
+    increaseButton.disabled = item.quantity >= 99;
+
+    wrapper.append(decreaseButton, quantity, increaseButton);
+    return wrapper;
+  }
+
+  function setCheckoutState(isEmpty) {
+    if (!elements.checkout) return;
+
+    elements.checkout.setAttribute('aria-disabled', String(isEmpty));
+    elements.checkout.tabIndex = isEmpty ? -1 : 0;
+    elements.checkout.classList.toggle('pointer-events-none', isEmpty);
+    elements.checkout.classList.toggle('cursor-not-allowed', isEmpty);
+    elements.checkout.classList.toggle('opacity-50', isEmpty);
+  }
+
+  function renderCart() {
+    const maybeCart = getCart();
+    const cart = Array.isArray(maybeCart) ? maybeCart : [];
+    const isEmpty = cart.length === 0;
+    const count = getCartItemCount(cart);
+    const subtotal = getCartTotal(cart);
+    const tax = subtotal * TAX_RATE;
+
+    elements.empty?.classList.toggle('hidden', !isEmpty);
+    elements.content?.classList.toggle('hidden', isEmpty);
+    elements.clear?.classList.toggle('hidden', isEmpty);
+    setCheckoutState(isEmpty);
+
+    if (elements.description) {
+      elements.description.textContent = isEmpty
+        ? 'Aún no has agregado productos.'
+        : `${count} ${count === 1 ? 'producto' : 'productos'} en tu carrito`;
+    }
+
+    if (elements.cartCount) elements.cartCount.textContent = String(count);
+
+    if (elements.items) {
+      elements.items.replaceChildren(
+        ...cart.map((item) => createCartItem(item, currencyFormatter))
+      );
+    }
+
+    if (elements.subtotal) elements.subtotal.textContent = currencyFormatter.format(subtotal);
+    if (elements.tax) elements.tax.textContent = currencyFormatter.format(tax);
+    if (elements.total) elements.total.textContent = currencyFormatter.format(subtotal + tax);
+  }
+
+  elements.items?.addEventListener('click', (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest('button[data-action][data-product-id]')
+      : null;
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    const productId = button.dataset.productId;
+    const maybeCart = getCart();
+    const cart = Array.isArray(maybeCart) ? maybeCart : [];
+    const item = cart.find((product) => product.id === productId);
+    if (!item) return;
+
+    if (button.dataset.action === 'remove') removeFromCart(productId);
+    if (button.dataset.action === 'decrease') updateQuantity(productId, item.quantity - 1);
+    if (button.dataset.action === 'increase') updateQuantity(productId, item.quantity + 1);
+  });
+
+  elements.clear?.addEventListener('click', () => {
+    if (window.confirm('Quieres vaciar todos los productos del carrito?')) clearCart();
+  });
+
+  elements.checkout?.addEventListener('click', (event) => {
+    if (elements.checkout?.getAttribute('aria-disabled') === 'true') {
+      event.preventDefault();
+    }
+  });
+
+  window.addEventListener(CART_UPDATED_EVENT, renderCart);
+  window.addEventListener('storage', (event) => {
+    if (isCartStorageEvent(event)) renderCart();
+  });
+
+  renderCart();
+</script>

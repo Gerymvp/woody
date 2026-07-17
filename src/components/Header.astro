@@ -40,12 +40,24 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <a href="/carrito" class="bg-black/30 p-2.5 rounded-xl text-white hover:bg-yellow-600 hover:text-black transition-all border border-white/10 shadow-lg backdrop-blur-sm">
+      <a
+        href="/carrito"
+        class="relative bg-black/30 p-2.5 rounded-xl text-white hover:bg-yellow-600 hover:text-black transition-all border border-white/10 shadow-lg backdrop-blur-sm"
+        aria-label="Ver carrito"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="8" cy="21" r="1"/>
           <circle cx="19" cy="21" r="1"/>
           <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
         </svg>
+
+        <span
+          id="cart-count"
+          class="absolute -right-2 -top-2 hidden min-w-5 rounded-full bg-yellow-500 px-1.5 py-0.5 text-center text-xs font-black text-black"
+          aria-live="polite"
+        >
+          0
+        </span>
       </a>
 
       <div class="relative">
@@ -104,7 +116,13 @@
 </header>
 
 <script>
-  import { trackEvent } from '../lib/tracker';
+  import {
+    CART_UPDATED_EVENT,
+    getCartItemCount,
+    isCartStorageEvent,
+  } from "../lib/cart.js";
+
+  import { trackEvent } from "../lib/tracker";
 
   const arrow = document.getElementById("profileArrow");
   const menu = document.getElementById("profileMenu");
@@ -118,23 +136,44 @@
     menu?.classList.add("hidden");
   });
 
-  // --- Captura de Métricas ---
+  const updateCartCount = () => {
+    const counter = document.getElementById("cart-count");
+    if (!counter) return;
 
-  // Click en Carrito
+    const count = getCartItemCount();
+
+    counter.textContent = String(count);
+    counter.classList.toggle("hidden", count === 0);
+  };
+
+  updateCartCount();
+
+  window.addEventListener(CART_UPDATED_EVENT, updateCartCount);
+
+  window.addEventListener("storage", (event) => {
+    if (isCartStorageEvent(event)) {
+      updateCartCount();
+    }
+  });
+
+  // Métricas
+
   const carritoBtn = document.querySelector('a[href="/carrito"]');
-  carritoBtn?.addEventListener('click', () => {
-    trackEvent('click_carrito');
+  carritoBtn?.addEventListener("click", () => {
+    trackEvent("click_carrito");
   });
 
-  // Click en Iniciar Sesión
-  const loginBtn = document.querySelector('a[href="https://www.swoodypty.com/login"]');
-  loginBtn?.addEventListener('click', () => {
-    trackEvent('click_login');
+  const loginBtn = document.querySelector(
+    'a[href="https://www.swoodypty.com/login"]'
+  );
+  loginBtn?.addEventListener("click", () => {
+    trackEvent("click_login");
   });
 
-  // Click en el enlace lateral de "Ver Catálogo Público" en el sidebar del Admin
-  const catalogoSidebarBtn = document.querySelector('a[href="/catalogo"]');
-  catalogoSidebarBtn?.addEventListener('click', () => {
-    trackEvent('click_catalogo', 'sidebar_admin');
+  const catalogoSidebarBtn = document.querySelector(
+    'a[href="/catalogo"]'
+  );
+  catalogoSidebarBtn?.addEventListener("click", () => {
+    trackEvent("click_catalogo", "sidebar_admin");
   });
 </script>

@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Checkout - Swoody">
+  <Header />
+
+  <main class="max-w-5xl mx-auto p-8">
+
+    <h1 class="text-5xl font-black mb-3">
+      Checkout
+    </h1>
+
+    <p class="text-gray-500 mb-10">
+      Revisa tu pedido antes de continuar.
+    </p>
+
+    <div class="bg-white rounded-3xl shadow-lg p-8">
+
+      <div class="flex justify-between mb-4">
+        <span>Subtotal</span>
+        <span id="subtotal">$0.00</span>
+      </div>
+
+      <div class="flex justify-between mb-4">
+        <span>ITBMS (7%)</span>
+        <span id="tax">$0.00</span>
+      </div>
+
+      <div class="border-t pt-4 flex justify-between text-2xl font-black">
+        <span>Total</span>
+        <span id="total">$0.00</span>
+      </div>
+
+      <div class="mt-10 p-6 rounded-2xl bg-yellow-50 border border-yellow-200">
+        <p class="font-bold">
+          El módulo de pago se implementará en una siguiente fase del proyecto.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+</Layout>
+
+<script>
+  import { getCartTotal } from '../lib/cart.js';
+
+  const subtotal = getCartTotal();
+  const tax = subtotal * 0.07;
+  const total = subtotal + tax;
+
+  const format = new Intl.NumberFormat('es-PA', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  document.getElementById('subtotal').textContent = format.format(subtotal);
+  document.getElementById('tax').textContent = format.format(tax);
+  document.getElementById('total').textContent = format.format(total);
+</script>
