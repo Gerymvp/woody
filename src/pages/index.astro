@@ -4,22 +4,20 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Catalogo from './catalogo.astro';
-import ProductCard from '../components/catalogo/ProductCard.astro';
 ---
 
 <Layout title="Swoody - Muebles a domicilio">
 	<Header />
 	
-	<!-- 2. Insertamos el Hero justo debajo del Header, fuera del main para que ocupe todo el ancho -->
 	<Hero />
 
-	<main class="max-w-7xl mx-auto p-8">
+	<!-- Cambiamos las clases restrictivas por w-full para que el Header interno se expanda -->
+	<main id="catalogo" class="w-full">
 		<Catalogo />
 	</main>
 </Layout>
 
 <script>
   import { trackEvent } from '../lib/tracker';
-  // Registrar visita a la página principal
   trackEvent('visita_pagina', 'home');
 </script>
