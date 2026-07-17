@@ -1,0 +1,246 @@
+---
+// src/pages/register.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Registrarse - Swoody">
+  <Header />
+
+  <main class="max-w-7xl mx-auto p-8">
+    <section class="flex justify-center items-center min-h-[70vh]">
+      <div class="bg-gray-200 rounded-2xl shadow-md p-10 w-full max-w-md">
+        
+        <h1 class="text-4xl font-black text-center mb-3">
+          Crear Cuenta
+        </h1>
+        <p class="text-center text-gray-600 mb-8" id="formSubtitle">
+          Regístrate para empezar a usar Swoody
+        </p>
+
+        <!-- PASO 1: Formulario de Registro de datos -->
+        <form id="registerForm" class="flex flex-col gap-4">
+          <div class="flex gap-2">
+            <input
+              id="nombre"
+              type="text"
+              placeholder="Nombre"
+              class="bg-white rounded-full px-5 py-3 focus:outline-none w-1/2"
+              required
+            />
+            <input
+              id="apellido"
+              type="text"
+              placeholder="Apellido"
+              class="bg-white rounded-full px-5 py-3 focus:outline-none w-1/2"
+              required
+            />
+          </div>
+
+          <input
+            id="email"
+            type="email"
+            placeholder="Correo electrónico"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none"
+            required
+          />
+
+          <button
+            type="submit"
+            class="bg-yellow-500 text-black py-3 rounded-full font-bold hover:bg-yellow-400 transition-all"
+          >
+            Enviar código de verificación
+          </button>
+        </form>
+
+        <!-- PASO 2: Formulario para ingresar el código OTP (Oculto al inicio) -->
+        <form id="otpForm" class="flex flex-col gap-4 hidden">
+          <p class="text-center text-sm text-gray-700">
+            Ingresa el código enviado a tu correo. Expira en <span id="countdown" class="font-bold text-red-500">60</span> segundos.
+          </p>
+          
+          <input
+            id="otpCode"
+            type="text"
+            placeholder="Código de 6 dígitos"
+            class="bg-white rounded-full px-5 py-3 focus:outline-none text-center text-2xl tracking-widest font-mono"
+            maxlength="6"
+            required
+          />
+
+          <button
+            type="submit"
+            class="bg-yellow-500 text-black py-3 rounded-full font-bold hover:bg-yellow-400 transition-all"
+          >
+            Verificar y Registrarse
+          </button>
+          
+          <button
+            id="resendBtn"
+            type="button"
+            class="text-sm text-blue-600 hover:underline disabled:opacity-50"
+            disabled
+          >
+            Reenviar código
+          </button>
+        </form>
+
+        <p id="message" class="text-center text-sm mt-4"></p>
+        
+        <p class="text-center text-sm text-gray-600 mt-6">
+          ¿Ya tienes cuenta? <a href="/login" class="text-yellow-600 font-bold hover:underline">Inicia sesión</a>
+        </p>
+
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script type="module">
+  import { supabase } from "/supabase.js";
+
+  // Formularios y Elementos
+  const registerForm = document.getElementById("registerForm");
+  const otpForm = document.getElementById("otpForm");
+  const formSubtitle = document.getElementById("formSubtitle");
+  const message = document.getElementById("message");
+  const countdownEl = document.getElementById("countdown");
+  const resendBtn = document.getElementById("resendBtn");
+
+  // Variables de estado temporales
+  let userEmail = "";
+  let userName = "";
+  let userLastName = "";
+  let timer;
+  let timeLeft = 60;
+
+  // Función para manejar la cuenta regresiva de 60 segundos
+  function startTimer() {
+    timeLeft = 60;
+    resendBtn.disabled = true;
+    countdownEl.textContent = timeLeft;
+    
+    clearInterval(timer);
+    timer = setInterval(() => {
+      timeLeft--;
+      countdownEl.textContent = timeLeft;
+      
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        resendBtn.disabled = false;
+        message.textContent = "El código ha expirado. Por favor solicita uno nuevo.";
+        message.className = "text-center text-sm text-red-500";
+      }
+    }, 1000);
+  }
+
+// PASO 1: Enviar OTP al correo del usuario
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    message.textContent = "Enviando código...";
+    message.className = "text-center text-sm text-gray-600 mt-4"; // Añadido margen superior para que no choque
+
+    userEmail = document.getElementById("email").value;
+    userName = document.getElementById("nombre").value;
+    userLastName = document.getElementById("apellido").value;
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: userEmail,
+      options: {
+        shouldCreateUser: true, 
+      }
+    });
+
+    if (error) {
+      // Si hay error (como el rechazo de Resend Sandbox), se muestra claramente aquí
+      message.textContent = `Error: ${error.message}`;
+      message.className = "text-center text-sm text-red-600 font-semibold mt-4";
+      return;
+    }
+
+    // Transición de pantallas si todo sale bien
+    registerForm.classList.add("hidden");
+    otpForm.classList.remove("hidden");
+    formSubtitle.textContent = "Verifica tu identidad";
+    message.textContent = ""; // Limpiamos el texto de carga
+    
+    startTimer();
+  });
+
+  // PASO 2: Verificar el código ingresado por el usuario
+  otpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    message.textContent = "";
+
+    const token = document.getElementById("otpCode").value;
+
+    if (timeLeft <= 0) {
+      message.textContent = "El tiempo expiró. Reenvía el código.";
+      message.className = "text-center text-sm text-red-500";
+      return;
+    }
+
+    // Verificamos el OTP con Supabase Auth
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: userEmail,
+      token,
+      type: 'signup' // o 'email' dependiendo de tu flujo, 'signup' es el estándar para nuevos usuarios
+    });
+
+    if (error) {
+      message.textContent = "Código incorrecto o expirado. Inténtalo de nuevo.";
+      message.className = "text-center text-sm text-red-500";
+      return;
+    }
+
+    // Si el usuario se verificó con éxito, procedemos a guardar sus datos en tu tabla 'perfiles'
+    if (data?.user) {
+      const { error: profileError } = await supabase
+        .from('perfiles')
+        .insert([
+          { 
+            id: data.user.id, // Enlazamos el UUID de autenticación con la tabla perfiles
+            nombre: userName,
+            apellido: userLastName,
+            role: 'client' // Rol por defecto, ya que vi que manejas 'admin' en la DB
+          }
+        ]);
+
+      if (profileError) {
+        console.error("Error al guardar el perfil:", profileError.message);
+        // Nota: El usuario ya está autenticado en Supabase Auth, pero falló la inserción en la tabla
+      }
+
+      message.textContent = "¡Registro completado con éxito!";
+      message.className = "text-center text-sm text-green-600 font-bold";
+
+      clearInterval(timer);
+      
+      // Redirigir al inicio o dashboard después de 1.5 segundos
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    }
+  });
+
+  // Botón para reenviar el código si expira
+  resendBtn.addEventListener("click", async () => {
+    message.textContent = "Reenviando código...";
+    message.className = "text-center text-sm text-gray-500";
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: userEmail,
+      options: { shouldCreateUser: true }
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      message.className = "text-center text-sm text-red-500";
+      return;
+    }
+
+    message.textContent = "¡Nuevo código enviado con éxito!";
+    message.className = "text-center text-sm text-green-600";
+    startTimer();
+  });
+</script>
