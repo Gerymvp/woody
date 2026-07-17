@@ -5,39 +5,157 @@ import Header from '../components/Header.astro';
 import ProductCard from '../components/catalogo/ProductCard.astro';
 import { supabase } from '../lib/supabase';
 
-// Fetch de productos desde la tabla que creamos
+// Fetch de productos desde Supabase
 const { data: productos, error } = await supabase
   .from('productos')
   .select('*');
 
+// Obtenemos las categorías únicas para el selector de forma dinámica
+const categorias = productos ? [...new Set(productos.map(p => p.categoria))] : [];
 ---
 
 <Layout title="Catálogo - Swoody">
+  <div class="flex flex-col md:flex-row min-h-screen bg-white">
+    
+    <!-- SIDEBAR DE FILTROS -->
+    <aside class="w-full md:w-64 p-6 bg-gray-50 border-r border-gray-200">
+      <h2 class="text-xl font-bold mb-6 text-gray-800">Filtros</h2>
+      
+      <div class="space-y-6">
+        <!-- Filtro por Nombre -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Buscar por nombre</label>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Ej. Cama, Mesa..." 
+            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </div>
 
-  <div class="flex min-h-screen bg-white">
-    <!-- Sidebar e interfaz... -->
+        <!-- Filtro por Categoría -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+          <select id="category-select" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black">
+            <option value="">Todas las categorías</option>
+            {categorias.map(cat => (
+              <option value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Filtro por Rango de Precio -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Precio Máximo</label>
+          <input 
+            type="range" 
+            id="price-range" 
+            min="0" 
+            max="3000" 
+            step="50" 
+            value="3000" 
+            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+          />
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>$0</span>
+            <span id="price-display">Hasta $3000</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL DE PRODUCTOS -->
     <main class="flex-1 p-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div id="grid-productos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {error && (
           <p class="col-span-full rounded-2xl bg-red-50 p-6 text-center text-red-700">
             No pudimos cargar el catálogo. Intenta nuevamente más tarde.
           </p>
         )}
         {!error && productos?.length === 0 && (
-          <p class="col-span-full rounded-2xl bg-gray-100 p-6 text-center text-gray-600">
+          <p id="no-products-msg" class="col-span-full rounded-2xl bg-gray-100 p-6 text-center text-gray-600">
             No hay productos disponibles por el momento.
           </p>
         )}
+        
+        {/* Renderizamos las tarjetas envolviéndolas en un contenedor identificable mediante datasets */}
         {!error && productos?.map((prod) => (
-          <ProductCard 
-            id={prod.id}
-            nombre={prod.nombre ?? prod.titulo}
-            precio={prod.precio}
-            imagen={prod.imagen_url}
-            categoria={prod.categoria}
-          />
+          <div 
+            class="product-item-container" 
+            data-nombre={(prod.nombre ?? prod.titulo).toLowerCase()}
+            data-categoria={prod.categoria}
+            data-precio={prod.precio}
+          >
+            <ProductCard 
+              id={prod.id}
+              nombre={prod.nombre ?? prod.titulo}
+              precio={prod.precio}
+              imagen={prod.imagen_url}
+              categoria={prod.categoria}
+            />
+          </div>
         ))}
+        
+        {/* Mensaje de respaldo cuando los filtros dejen la búsqueda vacía */}
+        <p id="empty-filter-msg" class="hidden col-span-full rounded-2xl bg-gray-100 p-6 text-center text-gray-600">
+          Ningún producto coincide con tus filtros.
+        </p>
       </div>
     </main>
   </div>
 </Layout>
+
+<script>
+  // Capturamos los elementos de la interfaz
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const categorySelect = document.getElementById('category-select') as HTMLSelectElement;
+  const priceRange = document.getElementById('price-range') as HTMLInputElement;
+  const priceDisplay = document.getElementById('price-display');
+  const emptyFilterMsg = document.getElementById('empty-filter-msg');
+  
+  // Capturamos todos los contenedores de productos creados
+  const productItems = document.querySelectorAll('.product-item-container');
+
+  function filtrarProductos() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const selectedCategory = categorySelect.value;
+    const maxPrice = parseFloat(priceRange.value);
+
+    // Actualizamos el texto del precio máximo en tiempo real
+    if (priceDisplay) priceDisplay.textContent = `Hasta $${maxPrice}`;
+
+    let visibles = 0;
+
+    productItems.forEach((item) => {
+      if (!(item instanceof HTMLElement)) return;
+
+      const nombre = item.dataset.nombre || '';
+      const categoria = item.dataset.categoria || '';
+      const precio = parseFloat(item.dataset.precio || '0');
+
+      // Evaluamos las 3 condiciones de coincidencia
+      const matchesSearch = nombre.includes(searchTerm);
+      const matchesCategory = selectedCategory === '' || categoria === selectedCategory;
+      const matchesPrice = precio <= maxPrice;
+
+      if (matchesSearch && matchesCategory && matchesPrice) {
+        item.classList.remove('hidden');
+        visibles++;
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+
+    // Si ningún producto coincide, mostramos el mensaje de error de búsqueda
+    if (visibles === 0 && productItems.length > 0) {
+      emptyFilterMsg?.classList.remove('hidden');
+    } else {
+      emptyFilterMsg?.classList.add('hidden');
+    }
+  }
+
+  // Escuchamos los eventos de cambio en los inputs
+  searchInput?.addEventListener('input', filtrarProductos);
+  categorySelect?.addEventListener('change', filtrarProductos);
+  priceRange?.addEventListener('input', filtrarProductos);
+</script>
