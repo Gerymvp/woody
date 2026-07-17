@@ -10,7 +10,6 @@ const { data: productos, error } = await supabase
   .from('productos')
   .select('*');
 
-const categories = ["Sala", "Comedor", "Dormitorio", "Empotrados", "Oficina"];
 ---
 
 <Layout title="Catálogo - Swoody">
@@ -19,9 +18,20 @@ const categories = ["Sala", "Comedor", "Dormitorio", "Empotrados", "Oficina"];
     <!-- Sidebar e interfaz... -->
     <main class="flex-1 p-8">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {productos?.map((prod) => (
+        {error && (
+          <p class="col-span-full rounded-2xl bg-red-50 p-6 text-center text-red-700">
+            No pudimos cargar el catálogo. Intenta nuevamente más tarde.
+          </p>
+        )}
+        {!error && productos?.length === 0 && (
+          <p class="col-span-full rounded-2xl bg-gray-100 p-6 text-center text-gray-600">
+            No hay productos disponibles por el momento.
+          </p>
+        )}
+        {!error && productos?.map((prod) => (
           <ProductCard 
-            titulo={prod.titulo}
+            id={prod.id}
+            nombre={prod.nombre ?? prod.titulo}
             precio={prod.precio}
             imagen={prod.imagen_url}
             categoria={prod.categoria}
