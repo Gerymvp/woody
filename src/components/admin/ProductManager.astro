@@ -1,57 +1,32 @@
 ---
 // src/components/admin/ProductManager.astro
-// Panel de administración de productos mejorado con carga de imágenes local/Google
+// Esqueleto HTML del gestor de productos
 ---
 
-<div class="space-y-8" id="product-manager">
+<div class="space-y-8">
   <div class="flex justify-between items-center border-b pb-4">
     <div>
       <h2 class="text-2xl font-bold text-gray-800">Inventario de Productos</h2>
-      <p class="text-sm text-gray-500">Gestiona tu catálogo con imágenes locales o de Google</p>
+      <p class="text-sm text-gray-500">Crea, edita o elimina los productos del catálogo de Swoody.</p>
     </div>
     <button 
       id="open-create-modal"
-      class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm flex items-center gap-2"
+      class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
     >
-      <span>+</span> Nuevo Producto
+      + Nuevo Producto
     </button>
   </div>
 
-  <!-- Barra de búsqueda y filtros -->
-  <div class="flex flex-wrap gap-4 items-center justify-between">
-    <div class="flex gap-2 flex-wrap">
-      <input 
-        type="text" 
-        id="search-product" 
-        placeholder="Buscar productos..."
-        class="px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm w-64"
-      />
-      <select 
-        id="filter-category" 
-        class="px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm bg-white"
-      >
-        <option value="all">Todas las categorías</option>
-        <option value="Sala">Sala</option>
-        <option value="Comedor">Comedor</option>
-        <option value="Dormitorio">Dormitorio</option>
-        <option value="Empotrados">Empotrados</option>
-        <option value="Oficina">Oficina</option>
-      </select>
-    </div>
-    <span id="product-count" class="text-sm text-gray-500">0 productos</span>
-  </div>
-
-  <!-- Tabla de productos -->
   <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wider">
-            <th class="p-4 w-24">Imagen</th>
-            <th class="p-4 min-w-[150px]">Producto</th>
+            <th class="p-4">Imagen</th>
+            <th class="p-4">Producto</th>
             <th class="p-4">Categoría</th>
             <th class="p-4">Precio</th>
-            <th class="p-4 text-center w-48">Acciones</th>
+            <th class="p-4 text-right">Acciones</th>
           </tr>
         </thead>
         <tbody id="products-table-body" class="divide-y divide-gray-50 text-sm text-gray-700">
@@ -63,9 +38,8 @@
     </div>
   </div>
 
-  <!-- Modal de producto -->
   <div id="product-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl w-full max-w-2xl p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
       <div class="flex justify-between items-center mb-4">
         <h3 id="modal-title" class="text-lg font-bold text-gray-900">Agregar Producto</h3>
         <button id="close-modal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
@@ -74,34 +48,32 @@
       <form id="product-form" class="space-y-4">
         <input type="hidden" id="product-id" name="id" />
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre del Producto</label>
-            <input 
-              type="text" 
-              id="product-titulo" 
-              name="titulo" 
-              required 
-              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
-              placeholder="Ej. Cama Queen"
-            />
-          </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre del Producto</label>
+          <input 
+            type="text" 
+            id="product-titulo" 
+            name="titulo" 
+            required 
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
+            placeholder="Ej. Cama Queen"
+          />
+        </div>
 
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Categoría</label>
-            <select 
-              id="product-categoria" 
-              name="categoria" 
-              required
-              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm bg-white"
-            >
-              <option value="Sala">Sala</option>
-              <option value="Comedor">Comedor</option>
-              <option value="Dormitorio">Dormitorio</option>
-              <option value="Empotrados">Empotrados</option>
-              <option value="Oficina">Oficina</option>
-            </select>
-          </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Categoría</label>
+          <select 
+            id="product-categoria" 
+            name="categoria" 
+            required
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm bg-white"
+          >
+            <option value="Sala">Sala</option>
+            <option value="Comedor">Comedor</option>
+            <option value="Dormitorio">Dormitorio</option>
+            <option value="Empotrados">Empotrados</option>
+            <option value="Oficina">Oficina</option>
+          </select>
         </div>
 
         <div>
@@ -117,52 +89,16 @@
           />
         </div>
 
-        <!-- Panel de imágenes mejorado -->
-        <div class="border-t pt-4">
-          <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Imagen del Producto</label>
-          
-          <!-- Previsualización -->
-          <div class="mb-3">
-            <div id="image-preview-container" class="relative w-32 h-32 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-              <img id="image-preview" src="" alt="Previsualización" class="w-full h-full object-cover hidden" />
-              <span id="image-placeholder" class="text-gray-400 text-xs text-center p-2">Sin imagen</span>
-            </div>
-          </div>
-
-          <!-- Opciones de carga -->
-          <div class="space-y-3">
-            <!-- Carga local -->
-            <div class="flex items-center gap-3">
-              <label class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl text-sm font-semibold cursor-pointer transition">
-                Subir imagen local
-                <input 
-                  type="file" 
-                  id="local-image-upload" 
-                  accept="image/*" 
-                  class="hidden"
-                />
-              </label>
-              <span class="text-xs text-gray-500">o</span>
-            </div>
-
-            <!-- URL de Google/Imagen -->
-            <div class="flex gap-2">
-              <input 
-                type="url" 
-                id="product-imagen" 
-                name="imagen_url" 
-                class="flex-1 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
-                placeholder="URL de imagen (Google, etc.)"
-              />
-              <button 
-                type="button" 
-                id="load-image-url"
-                class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
-              >
-                Cargar
-              </button>
-            </div>
-          </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">URL de la Imagen</label>
+          <input 
+            type="url" 
+            id="product-imagen" 
+            name="imagen_url" 
+            required 
+            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-gray-900 text-sm"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
         </div>
 
         <div class="flex gap-2 pt-4 border-t">
@@ -184,366 +120,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  // ===== LÓGICA COMPLETA DEL PANEL =====
-  
-  // Estado global
-  let productos = [];
-  let editingId = null;
-
-  // Elementos DOM
-  const dom = {
-    tableBody: document.getElementById('products-table-body'),
-    modal: document.getElementById('product-modal'),
-    form: document.getElementById('product-form'),
-    title: document.getElementById('modal-title'),
-    id: document.getElementById('product-id'),
-    titulo: document.getElementById('product-titulo'),
-    categoria: document.getElementById('product-categoria'),
-    precio: document.getElementById('product-precio'),
-    imagen: document.getElementById('product-imagen'),
-    preview: document.getElementById('image-preview'),
-    placeholder: document.getElementById('image-placeholder'),
-    previewContainer: document.getElementById('image-preview-container'),
-    search: document.getElementById('search-product'),
-    filterCategory: document.getElementById('filter-category'),
-    productCount: document.getElementById('product-count'),
-    localUpload: document.getElementById('local-image-upload'),
-    loadImageUrl: document.getElementById('load-image-url')
-  };
-
-  // ===== FUNCIONES DE IMAGEN =====
-  
-  // Cargar imagen desde URL
-  function loadImageFromUrl(url) {
-    if (!url) return;
-    
-    const img = new Image();
-    img.onload = function() {
-      dom.imagen.value = url;
-      updateImagePreview(url);
-    };
-    img.onerror = function() {
-      alert('No se pudo cargar la imagen desde la URL. Verifica que sea una imagen válida.');
-    };
-    img.src = url;
-  }
-
-  // Cargar imagen local
-  function loadLocalImage(file) {
-    if (!file || !file.type.startsWith('image/')) {
-      alert('Por favor selecciona una imagen válida.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const imageDataUrl = e.target.result;
-      dom.imagen.value = imageDataUrl;
-      updateImagePreview(imageDataUrl);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // Actualizar previsualización
-  function updateImagePreview(src) {
-    if (src && src.trim() !== '') {
-      dom.preview.src = src;
-      dom.preview.classList.remove('hidden');
-      dom.placeholder.classList.add('hidden');
-    } else {
-      dom.preview.classList.add('hidden');
-      dom.placeholder.classList.remove('hidden');
-    }
-  }
-
-  // ===== CRUD DE PRODUCTOS =====
-
-  // Cargar productos desde localStorage
-  function loadProducts() {
-    try {
-      const stored = localStorage.getItem('swoody_products');
-      if (stored) {
-        productos = JSON.parse(stored);
-      } else {
-        // Productos de ejemplo
-        productos = [
-          { id: 1, titulo: 'Sofá Moderno', categoria: 'Sala', precio: 1299.99, imagen_url: 'https://via.placeholder.com/300x200/1a1a1a/ffffff?text=Sofa' },
-          { id: 2, titulo: 'Mesa de Comedor', categoria: 'Comedor', precio: 899.50, imagen_url: 'https://via.placeholder.com/300x200/2a2a2a/ffffff?text=Mesa' },
-          { id: 3, titulo: 'Cama King Size', categoria: 'Dormitorio', precio: 2499.00, imagen_url: 'https://via.placeholder.com/300x200/3a3a3a/ffffff?text=Cama' }
-        ];
-        saveProducts();
-      }
-      renderProducts();
-    } catch (error) {
-      console.error('Error cargando productos:', error);
-      productos = [];
-      renderProducts();
-    }
-  }
-
-  // Guardar productos en localStorage
-  function saveProducts() {
-    try {
-      localStorage.setItem('swoody_products', JSON.stringify(productos));
-    } catch (error) {
-      console.error('Error guardando productos:', error);
-    }
-  }
-
-  // Renderizar productos (con filtros)
-  function renderProducts() {
-    const searchTerm = dom.search.value.toLowerCase().trim();
-    const categoryFilter = dom.filterCategory.value;
-
-    let filtered = productos.filter(p => {
-      const matchSearch = p.titulo.toLowerCase().includes(searchTerm);
-      const matchCategory = categoryFilter === 'all' || p.categoria === categoryFilter;
-      return matchSearch && matchCategory;
-    });
-
-    dom.productCount.textContent = filtered.length + ' productos';
-
-    if (filtered.length === 0) {
-      dom.tableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="p-8 text-center text-gray-400">
-            ${productos.length === 0 ? 'No hay productos. Crea tu primer producto!' : 'No se encontraron productos'}
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    dom.tableBody.innerHTML = filtered.map(p => `
-      <tr class="hover:bg-gray-50 transition" data-id="${p.id}">
-        <td class="p-4">
-          <img 
-            src="${p.imagen_url || 'https://via.placeholder.com/300x200/cccccc/666666?text=No+Image'}" 
-            alt="${p.titulo}"
-            class="w-16 h-16 object-cover rounded-lg border border-gray-100"
-            onerror="this.src='https://via.placeholder.com/300x200/cccccc/666666?text=Error'"
-          />
-        </td>
-        <td class="p-4 font-medium">${p.titulo}</td>
-        <td class="p-4">
-          <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">${p.categoria}</span>
-        </td>
-        <td class="p-4 font-semibold">$${p.precio.toFixed(2)}</td>
-        <td class="p-4">
-          <div class="flex items-center justify-center gap-2">
-            <button 
-              class="edit-product bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
-              data-id="${p.id}"
-              title="Editar producto"
-            >
-              Editar
-            </button>
-            <button 
-              class="delete-product bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
-              data-id="${p.id}"
-              title="Eliminar producto"
-            >
-              Eliminar
-            </button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-
-    // Event listeners para botones
-    document.querySelectorAll('.edit-product').forEach(btn => {
-      btn.addEventListener('click', () => openEditModal(parseInt(btn.dataset.id)));
-    });
-    document.querySelectorAll('.delete-product').forEach(btn => {
-      btn.addEventListener('click', () => deleteProduct(parseInt(btn.dataset.id)));
-    });
-  }
-
-  // ===== MODAL =====
-
-  function openCreateModal() {
-    editingId = null;
-    dom.title.textContent = 'Agregar Producto';
-    dom.form.reset();
-    dom.id.value = '';
-    dom.preview.classList.add('hidden');
-    dom.placeholder.classList.remove('hidden');
-    dom.imagen.value = '';
-    dom.modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    // Focus en primer campo
-    setTimeout(() => dom.titulo.focus(), 100);
-  }
-
-  function openEditModal(id) {
-    const product = productos.find(p => p.id === id);
-    if (!product) return;
-
-    editingId = id;
-    dom.title.textContent = 'Editar Producto';
-    dom.id.value = id;
-    dom.titulo.value = product.titulo;
-    dom.categoria.value = product.categoria;
-    dom.precio.value = product.precio;
-    dom.imagen.value = product.imagen_url || '';
-    updateImagePreview(product.imagen_url || '');
-    dom.modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    dom.modal.classList.add('hidden');
-    document.body.style.overflow = '';
-    editingId = null;
-  }
-
-  // ===== CRUD =====
-
-  function deleteProduct(id) {
-    const product = productos.find(p => p.id === id);
-    if (!product) return;
-
-    if (confirm('¿Eliminar "' + product.titulo + '"?')) {
-      productos = productos.filter(p => p.id !== id);
-      saveProducts();
-      renderProducts();
-    }
-  }
-
-  function saveProduct(event) {
-    event.preventDefault();
-
-    const formData = {
-      titulo: dom.titulo.value.trim(),
-      categoria: dom.categoria.value,
-      precio: parseFloat(dom.precio.value),
-      imagen_url: dom.imagen.value.trim()
-    };
-
-    // Validaciones
-    if (!formData.titulo) {
-      alert('El nombre del producto es obligatorio');
-      dom.titulo.focus();
-      return;
-    }
-    if (!formData.precio || formData.precio <= 0) {
-      alert('El precio debe ser mayor a 0');
-      dom.precio.focus();
-      return;
-    }
-    if (!formData.imagen_url) {
-      alert('La imagen es obligatoria. Sube una imagen o ingresa una URL.');
-      return;
-    }
-
-    if (editingId) {
-      // Editar
-      const index = productos.findIndex(p => p.id === editingId);
-      if (index !== -1) {
-        productos[index] = { ...productos[index], ...formData };
-      }
-    } else {
-      // Crear nuevo
-      const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-      productos.push({
-        id: newId,
-        ...formData
-      });
-    }
-
-    saveProducts();
-    renderProducts();
-    closeModal();
-  }
-
-  // ===== EVENT LISTENERS =====
-
-  // Inicialización
-  document.addEventListener('DOMContentLoaded', () => {
-    loadProducts();
-
-    // Botones modal
-    document.getElementById('open-create-modal').addEventListener('click', openCreateModal);
-    document.getElementById('close-modal').addEventListener('click', closeModal);
-    document.getElementById('cancel-modal').addEventListener('click', closeModal);
-    
-    // Cerrar modal al hacer click fuera
-    dom.modal.addEventListener('click', (e) => {
-      if (e.target === dom.modal) closeModal();
-    });
-
-    // Escapar para cerrar
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    // Submit form
-    dom.form.addEventListener('submit', saveProduct);
-
-    // Carga de imagen local
-    dom.localUpload.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files[0]) {
-        loadLocalImage(e.target.files[0]);
-      }
-    });
-
-    // Carga de URL
-    dom.loadImageUrl.addEventListener('click', () => {
-      const url = dom.imagen.value.trim();
-      if (url) {
-        loadImageFromUrl(url);
-      } else {
-        alert('Ingresa una URL de imagen primero.');
-      }
-    });
-
-    // Carga automática cuando se pega una URL
-    dom.imagen.addEventListener('paste', (e) => {
-      const pastedUrl = e.clipboardData.getData('text');
-      if (pastedUrl && (pastedUrl.startsWith('http://') || pastedUrl.startsWith('https://'))) {
-        setTimeout(() => loadImageFromUrl(pastedUrl), 100);
-      }
-    });
-
-    // Filtros
-    dom.search.addEventListener('input', renderProducts);
-    dom.filterCategory.addEventListener('change', renderProducts);
-  });
-</script>
-
-<style>
-  .animate-in {
-    animation: animateIn 0.2s ease-out;
-  }
-
-  @keyframes animateIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* Scroll suave para el modal */
-  #product-modal .overflow-y-auto {
-    scrollbar-width: thin;
-  }
-
-  #product-modal .overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  #product-modal .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 3px;
-  }
-
-  #product-modal .overflow-y-auto::-webkit-scrollbar-track {
-    background: transparent;
-  }
-</style>

@@ -12,12 +12,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "^6.0.1",
     "@supabase/supabase-js": "^2.105.1",
     "@tailwindcss/vite": "^4.2.4",
     "astro": "^6.1.9",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
     "tailwindcss": "^4.2.4"
   }
 }
