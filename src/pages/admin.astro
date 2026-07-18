@@ -69,28 +69,6 @@ import MetricsDashboard from '../components/admin/MetricsDashboard.astro';
 </Layout>
 
 <script>
-
-const {
-  data: { user }
-} = await supabase.auth.getUser();
-
-if (!user) {
-  window.location.href = "/login";
-  throw new Error("Usuario no autenticado");
-}
-
-const { data: profile, error } = await supabase
-  .from("perfiles")
-  .select("role")
-  .eq("id", user.id)
-  .single();
-
-if (error || !profile || profile.role !== "admin") {
-  window.location.href = "/";
-  throw new Error("Acceso denegado");
-}
-
-
   import { supabase } from '../lib/supabase';
   import { trackEvent } from '../lib/tracker';
 
@@ -128,30 +106,7 @@ if (error || !profile || profile.role !== "admin") {
 
 
   // --- LOGICA 1: SISTEMA DE MÉTRICAS ---
-// --- SISTEMA UNIFICADO DE MÉTRICAS (SUPABASE + GOOGLE ANALYTICS) ---
   async function fetchMetrics() {
-    // 1. Intentar traer los datos en tiempo real de Google Analytics 4
-    try {
-      const res = await fetch('/api/analytics');
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      
-      const json = await res.json();
-      
-      // Validamos que GA4 haya devuelto filas con datos antes de intentar leerlos
-      if (json.data && json.data.rows && json.data.rows.length > 0) {
-        // Extraemos el valor de usuarios activos (activeUsers) mapeado en tu API
-        const activeUsers = json.data.rows[0].metricValues[0].value;
-        
-        const elVisitas = document.getElementById('metric-visitas');
-        if (elVisitas) elVisitas.innerText = String(activeUsers);
-      }
-    } catch (err) {
-      console.error('Error al recuperar datos de GA4, usando respaldo local:', err);
-      // Nota: Si falla GA4 por falta de cuota o credenciales, la tarjeta de visitas 
-      // se actualizará abajo con el conteo acumulado de Supabase.
-    }
-
-    // 2. Traer el resto de métricas de interacción desde Supabase
     try {
       const { data, error } = await supabase
         .from('metricas_eventos')
@@ -159,26 +114,21 @@ if (error || !profile || profile.role !== "admin") {
 
       if (error) throw error;
 
-      let visitasSupabase = 0, carrito = 0, login = 0, catalogo = 0;
+      let visitas = 0, carrito = 0, login = 0, catalogo = 0;
 
       data?.forEach(item => {
-        if (item.evento_tipo === 'visita_pagina') visitasSupabase++;
+        if (item.evento_tipo === 'visita_pagina') visitas++;
         else if (item.evento_tipo === 'click_carrito') carrito++;
         else if (item.evento_tipo === 'click_login') login++;
         else if (item.evento_tipo === 'click_catalogo') catalogo++;
       });
 
-      // Si necesitas que la tarjeta de visitas muestre los datos de Supabase 
-      // únicamente en caso de que GA4 no responda, podemos condicionarlo:
       const elVisitas = document.getElementById('metric-visitas');
-      if (elVisitas && (elVisitas.innerText === '...' || elVisitas.innerText === '0')) {
-        elVisitas.innerText = String(visitasSupabase);
-      }
-
       const elCarrito = document.getElementById('metric-carrito');
       const elLogin = document.getElementById('metric-login');
       const elCatalogo = document.getElementById('metric-catalogo');
 
+      if (elVisitas) elVisitas.innerText = String(visitas);
       if (elCarrito) elCarrito.innerText = String(carrito);
       if (elLogin) elLogin.innerText = String(login);
       if (elCatalogo) elCatalogo.innerText = String(catalogo);
@@ -208,6 +158,12 @@ if (error || !profile || profile.role !== "admin") {
   const inputCategoria = document.getElementById('product-categoria') as HTMLInputElement;
   const inputPrecio = document.getElementById('product-precio') as HTMLInputElement;
   const inputImagen = document.getElementById('product-imagen') as HTMLInputElement;
+  
+  // ============================================
+  // NUEVO: Variables para manejo de imágenes locales
+  // ============================================
+  const fileInput = document.getElementById('product-imagen-file') as HTMLInputElement;
+  const preview = document.getElementById('preview-imagen') as HTMLImageElement;
 
   async function loadProducts() {
     try {
@@ -257,10 +213,23 @@ if (error || !profile || profile.role !== "admin") {
     if (modalTitle) modalTitle.innerText = editMode ? 'Editar Producto' : 'Agregar Producto';
   }
 
+  // ============================================
+  // MODIFICADO: hideModal con limpieza de preview
+  // ============================================
   function hideModal() {
     modal?.classList.add('hidden');
     form?.reset();
     if (inputId) inputId.value = '';
+    
+    // Limpiar preview al cerrar modal
+    if (preview) {
+      preview.classList.add('hidden');
+      preview.src = '';
+    }
+    // Resetear el input file también
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   form?.addEventListener('submit', async (e) => {
@@ -292,6 +261,9 @@ if (error || !profile || profile.role !== "admin") {
     }
   });
 
+  // ============================================
+  // MODIFICADO: handleEdit con preview de imagen
+  // ============================================
   function handleEdit(e: Event) {
     const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
     const product = localProducts.find(p => String(p.id) === String(id));
@@ -302,6 +274,12 @@ if (error || !profile || profile.role !== "admin") {
     if (inputCategoria) inputCategoria.value = product.categoria;
     if (inputPrecio) inputPrecio.value = String(product.precio);
     if (inputImagen) inputImagen.value = product.imagen_url;
+    
+    // Mostrar preview de la imagen existente
+    if (preview && product.imagen_url) {
+      preview.src = product.imagen_url;
+      preview.classList.remove('hidden');
+    }
 
     showModal(true);
   }
@@ -324,8 +302,59 @@ if (error || !profile || profile.role !== "admin") {
     }
   }
 
+  // ============================================
+  // NUEVO: Listeners para carga de imágenes locales
+  // ============================================
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const img = e.target?.result as string;
+
+        inputImagen.value = img;
+
+        if (preview) {
+          preview.src = img;
+          preview.classList.remove('hidden');
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Listener para cuando se pega/edita una URL manualmente
+  if (inputImagen) {
+    inputImagen.addEventListener('input', () => {
+      if (!preview) return;
+
+      if (inputImagen.value.trim() !== '') {
+        preview.src = inputImagen.value;
+        preview.classList.remove('hidden');
+      } else {
+        preview.classList.add('hidden');
+      }
+    });
+  }
+
   // Interfaz Listeners del Modal
-  document.getElementById('open-create-modal')?.addEventListener('click', () => showModal(false));
+  document.getElementById('open-create-modal')?.addEventListener('click', () => {
+    // Limpiar preview al abrir para crear nuevo
+    if (preview) {
+      preview.classList.add('hidden');
+      preview.src = '';
+    }
+    if (fileInput) {
+      fileInput.value = '';
+    }
+    showModal(false);
+  });
+  
   document.getElementById('close-modal')?.addEventListener('click', hideModal);
   document.getElementById('cancel-modal')?.addEventListener('click', hideModal);
 
