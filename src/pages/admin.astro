@@ -128,7 +128,30 @@ if (error || !profile || profile.role !== "admin") {
 
 
   // --- LOGICA 1: SISTEMA DE MÉTRICAS ---
+// --- SISTEMA UNIFICADO DE MÉTRICAS (SUPABASE + GOOGLE ANALYTICS) ---
   async function fetchMetrics() {
+    // 1. Intentar traer los datos en tiempo real de Google Analytics 4
+    try {
+      const res = await fetch('/api/analytics');
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      
+      const json = await res.json();
+      
+      // Validamos que GA4 haya devuelto filas con datos antes de intentar leerlos
+      if (json.data && json.data.rows && json.data.rows.length > 0) {
+        // Extraemos el valor de usuarios activos (activeUsers) mapeado en tu API
+        const activeUsers = json.data.rows[0].metricValues[0].value;
+        
+        const elVisitas = document.getElementById('metric-visitas');
+        if (elVisitas) elVisitas.innerText = String(activeUsers);
+      }
+    } catch (err) {
+      console.error('Error al recuperar datos de GA4, usando respaldo local:', err);
+      // Nota: Si falla GA4 por falta de cuota o credenciales, la tarjeta de visitas 
+      // se actualizará abajo con el conteo acumulado de Supabase.
+    }
+
+    // 2. Traer el resto de métricas de interacción desde Supabase
     try {
       const { data, error } = await supabase
         .from('metricas_eventos')
@@ -136,21 +159,26 @@ if (error || !profile || profile.role !== "admin") {
 
       if (error) throw error;
 
-      let visitas = 0, carrito = 0, login = 0, catalogo = 0;
+      let visitasSupabase = 0, carrito = 0, login = 0, catalogo = 0;
 
       data?.forEach(item => {
-        if (item.evento_tipo === 'visita_pagina') visitas++;
+        if (item.evento_tipo === 'visita_pagina') visitasSupabase++;
         else if (item.evento_tipo === 'click_carrito') carrito++;
         else if (item.evento_tipo === 'click_login') login++;
         else if (item.evento_tipo === 'click_catalogo') catalogo++;
       });
 
+      // Si necesitas que la tarjeta de visitas muestre los datos de Supabase 
+      // únicamente en caso de que GA4 no responda, podemos condicionarlo:
       const elVisitas = document.getElementById('metric-visitas');
+      if (elVisitas && (elVisitas.innerText === '...' || elVisitas.innerText === '0')) {
+        elVisitas.innerText = String(visitasSupabase);
+      }
+
       const elCarrito = document.getElementById('metric-carrito');
       const elLogin = document.getElementById('metric-login');
       const elCatalogo = document.getElementById('metric-catalogo');
 
-      if (elVisitas) elVisitas.innerText = String(visitas);
       if (elCarrito) elCarrito.innerText = String(carrito);
       if (elLogin) elLogin.innerText = String(login);
       if (elCatalogo) elCatalogo.innerText = String(catalogo);
